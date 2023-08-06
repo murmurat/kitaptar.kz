@@ -1,0 +1,17 @@
+package api
+
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+//type RegisterRequest struct {
+//	Email     string `json:"email" db:"email" binding:"required"`
+//	FirstName string `json:"first_name" db:"first_name" binding:"required"`
+//	LastName  string `json:"last_name" db:"last_name" binding:"required"`
+//	Password  string `json:"password" db:"password" binding:"required"`
+//}
+
+type Error struct {
+	Message string `json:"message"`
+}
