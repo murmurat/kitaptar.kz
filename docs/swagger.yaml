@@ -1,0 +1,65 @@
+basePath: /main
+definitions:
+  api.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  entity.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: admin@kitaptar.kz
+    name: Meiirzhan
+  description: API for Book application
+  title: ONE LAB Kitaptar
+  version: 0.0.1
+paths:
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: req body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      summary: Create user
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
