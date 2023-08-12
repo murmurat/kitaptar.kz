@@ -37,3 +37,17 @@ func (h *Handler) authMiddleware() gin.HandlerFunc {
 	}
 
 }
+
+func getUserEmail(c *gin.Context) (string, error) {
+	emailDirty, ok := c.Get(authUserID)
+	if !ok {
+		return "", errors.New("user email not found")
+	}
+
+	email, ok := emailDirty.(string)
+	if !ok {
+		return "", errors.New("user email is of invalid type")
+	}
+
+	return email, nil
+}

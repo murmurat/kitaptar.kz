@@ -9,7 +9,12 @@ import (
 
 import "github.com/jackc/pgx/v4/pgxpool"
 
-const usersTable = "users"
+const (
+	usersTable     = "users"
+	bookTable      = "books"
+	authorTable    = "authors"
+	filePathsTable = "file_paths"
+)
 
 type Postgres struct {
 	host     string
