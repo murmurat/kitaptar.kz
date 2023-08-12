@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/pgxscan"
+	"one-lab/api"
 	"one-lab/internal/entity"
 	"strings"
 )
@@ -56,4 +57,28 @@ func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, err
 	}
 
 	return user, nil
+}
+
+func (p *Postgres) UpdateUser(ctx context.Context, id string, user api.UpdateUserRequest) error {
+	query := fmt.Sprintf("UPDATE %s SET", usersTable)
+	if user.FirstName != "" {
+		query += fmt.Sprintf(" first_name = ", user.FirstName)
+	}
+	if user.LastName != "" {
+		query += fmt.Sprintf(", last_name = ", user.LastName)
+	}
+	if user.Email != "" {
+		query += fmt.Sprintf(", email = ", user.Email)
+	}
+	if user.Password != "" {
+		query += fmt.Sprintf(", password = ", user.Password)
+	}
+
+	query += fmt.Sprintf("WHERE id = $1 ;")
+
+	_, err := p.Pool.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

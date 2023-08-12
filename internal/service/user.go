@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"one-lab/api"
 	"one-lab/internal/entity"
 	"one-lab/pkg/util"
 )
@@ -54,4 +55,13 @@ func (m *Manager) VerifyToken(token string) (string, error) {
 	}
 
 	return claim.Email, nil
+}
+
+func (m *Manager) UpdateUser(ctx context.Context, id string, req api.UpdateUserRequest) error {
+
+	//user, err := m.Repository.GetUser(ctx, req.Email)
+	//if err != nil {
+	//	return err
+	//}
+	return m.Repository.UpdateUser(ctx, id, req)
 }

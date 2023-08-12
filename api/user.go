@@ -5,6 +5,13 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type UpdateUserRequest struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Password  string `json:"password"`
+	Email     string `json:"email"`
+}
+
 //type RegisterRequest struct {
 //	Email     string `json:"email" db:"email" binding:"required"`
 //	FirstName string `json:"first_name" db:"first_name" binding:"required"`
