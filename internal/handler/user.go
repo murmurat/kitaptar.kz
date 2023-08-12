@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -64,15 +63,25 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
-func (h *Handler) userBooks(ctx *gin.Context) {
-	email, ok := ctx.MustGet(authUserID).(string)
-	if !ok {
-		log.Printf("can't get user email on userBooks")
-		ctx.Status(http.StatusBadRequest)
-		return
+func (h *Handler) updateUser(ctx *gin.Context) {
+	var req api.UpdateUserRequest
+	id := ctx.Params.ByName("id")
+
+	if err := ctx.BindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	// logic
-	fmt.Println("Email of book owner user: ", email)
-	ctx.Status(http.StatusOK)
+	err := h.srvs.UpdateUser(ctx, id, req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+	//var person Person
+	//id := c.Params.ByName(“id”)
+	//if err := db.Where(“id = ?”, id).First(&person).Error; err != nil {
+	//	c.AbortWithStatus(404)
+	//	fmt.Println(err)
+	//}
+	//c.BindJSON(&person)
+	//db.Save(&person)
+	//c.JSON(200, person)
 }
