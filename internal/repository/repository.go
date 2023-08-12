@@ -13,7 +13,7 @@ type Repository interface {
 
 	GetUserBooks(email string) ([]entity.Book, error)
 	GetAllBooks(ctx context.Context) ([]entity.Book, error)
-	GetBookById(ctx context.Context, id string) (entity.Book, error)
+	GetBookById(ctx context.Context, id string) (*entity.Book, error)
 	//UpdateUser(ctx context.Context, u *entity.User) error
 	//DeleteUser(ctx context.Context, id int64) error
 	//VerifyToken(token string) error
