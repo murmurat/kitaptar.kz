@@ -2,7 +2,6 @@ package jwttoken
 
 import (
 	"errors"
-	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"log"
 	"time"
@@ -27,7 +26,7 @@ func (j *JWTToken) CreateToken(email string, duration time.Duration) (tokenStrin
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	fmt.Println("Secret key: ", j.secretKey)
+	//fmt.Println("Secret key: ", j.secretKey)
 	tokenString, err = token.SignedString([]byte(j.secretKey))
 	if err != nil {
 		log.Printf("Token sign error %w", err)
