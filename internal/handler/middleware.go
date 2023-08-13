@@ -51,3 +51,8 @@ func getUserEmail(c *gin.Context) (string, error) {
 
 	return email, nil
 }
+
+func setNewEmail(c *gin.Context, email string) error {
+	c.Set(authUserID, email)
+	return nil
+}
