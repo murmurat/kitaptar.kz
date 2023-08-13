@@ -65,14 +65,18 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 
 func (h *Handler) updateUser(ctx *gin.Context) {
 	var req api.UpdateUserRequest
-	id := ctx.Params.ByName("id")
+	//id := ctx.Params.ByName("id")
+	email, err := getUserEmail(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+	}
 
 	if err := ctx.BindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
-
-	err := h.srvs.UpdateUser(ctx, id, req)
+	err = h.srvs.UpdateUser(ctx, email, &req)
 	if err != nil {
+		log.Println(err)
 		ctx.JSON(http.StatusInternalServerError, err)
 	}
 	//var person Person
@@ -84,4 +88,32 @@ func (h *Handler) updateUser(ctx *gin.Context) {
 	//c.BindJSON(&person)
 	//db.Save(&person)
 	//c.JSON(200, person)
+}
+
+func (h *Handler) getUser(ctx *gin.Context) {
+	email, err := getUserEmail(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+	user, err := h.srvs.GetUser(ctx, email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusFound, user)
+
+}
+
+func (h *Handler) deleteUser(ctx *gin.Context) {
+	email, err := getUserEmail(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	err = h.srvs.DeleteUser(ctx, email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	ctx.JSON(http.StatusOK, "User deleted")
 }
