@@ -57,11 +57,20 @@ func (m *Manager) VerifyToken(token string) (string, error) {
 	return claim.Email, nil
 }
 
-func (m *Manager) UpdateUser(ctx context.Context, id string, req api.UpdateUserRequest) error {
+func (m *Manager) UpdateUser(ctx context.Context, email string, req *api.UpdateUserRequest) error {
 
-	//user, err := m.Repository.GetUser(ctx, req.Email)
-	//if err != nil {
-	//	return err
-	//}
-	return m.Repository.UpdateUser(ctx, id, req)
+	user, err := m.Repository.GetUser(ctx, email)
+	userID := user.Id
+	if err != nil {
+		return err
+	}
+	return m.Repository.UpdateUser(ctx, userID.String(), req)
+}
+
+func (m *Manager) GetUser(ctx context.Context, email string) (*entity.User, error) {
+	return m.Repository.GetUser(ctx, email)
+}
+
+func (m *Manager) DeleteUser(ctx context.Context, email string) error {
+	return m.Repository.DeleteUser(ctx, email)
 }

@@ -7,34 +7,18 @@ import (
 	"one-lab/api"
 )
 
-func (h *Handler) userBooks(ctx *gin.Context) {
-	email, ok := ctx.MustGet(authUserID).(string)
-	if !ok {
-		log.Printf("can't get user email on userBooks")
-		ctx.Status(http.StatusBadRequest)
-		return
-	}
-	_, err := h.srvs.GetUserBooks(email)
-	if err != nil {
-		log.Printf("get User books error %s", err.Error())
-	}
-	// logic
-	//fmt.Println("Email of book owner user: ", email)
-	//ctx.Status(http.StatusOK)
-}
+func (h *Handler) getAllAuthors(ctx *gin.Context) {
 
-func (h *Handler) getAllBooks(ctx *gin.Context) {
-
-	books, err := h.srvs.GetAllBooks(ctx)
+	authors, err := h.srvs.GetAllAuthors(ctx)
 
 	if err != nil {
-		log.Printf("Handler all book getting error %w", err)
+		log.Printf("Handler all authors getting error %w", err)
 	}
 
-	ctx.JSON(http.StatusOK, books)
+	ctx.JSON(http.StatusOK, authors)
 }
 
-func (h *Handler) getBookById(ctx *gin.Context) {
+func (h *Handler) getAuthorById(ctx *gin.Context) {
 
 	bookId := ctx.Param("id")
 	book, err := h.srvs.GetBookById(ctx, bookId)
@@ -46,7 +30,7 @@ func (h *Handler) getBookById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, book)
 }
 
-func (h *Handler) createBook(ctx *gin.Context) {
+func (h *Handler) createAuthor(ctx *gin.Context) {
 	var req api.BookRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -63,7 +47,7 @@ func (h *Handler) createBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, req)
 }
 
-func (h *Handler) updateBook(ctx *gin.Context) {
+func (h *Handler) updateAuthor(ctx *gin.Context) {
 	var req api.BookRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -85,7 +69,7 @@ func (h *Handler) updateBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, req)
 }
 
-func (h *Handler) deleteBook(ctx *gin.Context) {
+func (h *Handler) deleteAuthor(ctx *gin.Context) {
 
 	bookId := ctx.Param("id")
 

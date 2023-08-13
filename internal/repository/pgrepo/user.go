@@ -6,6 +6,7 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"one-lab/api"
 	"one-lab/internal/entity"
+	"one-lab/pkg/util"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) error {
 func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, error) {
 	user := new(entity.User)
 
-	query := fmt.Sprintf("SELECT id, email, first_name, last_name, password FROM %s WHERE email = $1", usersTable)
+	query := fmt.Sprintf("SELECT id, email, first_name, last_name, password FROM %s WHERE email = '$1'", usersTable)
 
 	//rows, err := p.SQLDB.Query(query, username)
 	//if err != nil {
@@ -59,26 +60,50 @@ func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, err
 	return user, nil
 }
 
-func (p *Postgres) UpdateUser(ctx context.Context, id string, user api.UpdateUserRequest) error {
-	query := fmt.Sprintf("UPDATE %s SET", usersTable)
+func (p *Postgres) UpdateUser(ctx context.Context, id string, user *api.UpdateUserRequest) error {
+
+	values := make([]string, 0)
+
 	if user.FirstName != "" {
-		query += fmt.Sprintf(" first_name = ", user.FirstName)
+		values = append(values, fmt.Sprintf("first_name='%s'", user.FirstName))
 	}
 	if user.LastName != "" {
-		query += fmt.Sprintf(", last_name = ", user.LastName)
+		values = append(values, fmt.Sprintf("last_name='%s'", user.LastName))
 	}
 	if user.Email != "" {
-		query += fmt.Sprintf(", email = ", user.Email)
+		// change to user id for correctness
+		values = append(values, fmt.Sprintf("email='%s'", user.Email))
 	}
 	if user.Password != "" {
-		query += fmt.Sprintf(", password = ", user.Password)
+		password, err := util.HashPassword(user.Password)
+		if err != nil {
+			//fmt.Println(err)
+			return err
+		}
+		values = append(values, fmt.Sprintf("password='%s'", password))
 	}
 
-	query += fmt.Sprintf("WHERE id = $1 ;")
+	setQuery := strings.Join(values, ", ")
 
-	_, err := p.Pool.Exec(ctx, query, id)
+	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
+	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", usersTable, setQuery, id)
+	fmt.Println(query)
+
+	_, err := p.Pool.Exec(ctx, query)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (p *Postgres) DeleteUser(ctx context.Context, email string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE email='%s'", usersTable, email)
+
+	_, err := p.Pool.Exec(ctx, query)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
