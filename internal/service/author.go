@@ -24,10 +24,10 @@ func (m *Manager) DeleteAuthor(ctx context.Context, id string) error {
 }
 
 func (m *Manager) UpdateAuthor(ctx context.Context, id string, req *api.AuthorRequest) error {
-	author, err := m.Repository.GetAuthorById(ctx, id)
-	if err != nil {
-		return err
-	}
-	authorID := author.Id
-	return m.Repository.UpdateAuthor(ctx, authorID.String(), req)
+	//author, err := m.Repository.GetAuthorById(ctx, id)
+	//if err != nil {
+	//	return err
+	//}
+	//authorID := author.Id
+	return m.Repository.UpdateAuthor(ctx, id, req)
 }

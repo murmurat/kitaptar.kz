@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/pgxscan"
+	"log"
 	"one-lab/api"
 	"one-lab/internal/entity"
 	"one-lab/pkg/util"
 	"strings"
+	"time"
 )
 
 func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) error {
@@ -16,13 +18,14 @@ func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) error {
 			                email, -- 1 
 			                first_name, -- 2
 			                last_name, -- 3
-			                password -- 4
+			                password -- 4,
+							created_at
 			                )
-			VALUES ($1, $2, $3, $4)
+			VALUES ($1, $2, $3, $4, $5)
 			`, usersTable)
 
 	fmt.Println(u)
-	_, err := p.Pool.Exec(ctx, query, u.Email, u.FirstName, u.LastName, u.Password)
+	_, err := p.Pool.Exec(ctx, query, u.Email, u.FirstName, u.LastName, u.Password, time.Now())
 	if err != nil {
 		return err
 	}
@@ -32,8 +35,8 @@ func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) error {
 
 func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, error) {
 	user := new(entity.User)
-
-	query := fmt.Sprintf("SELECT id, email, first_name, last_name, password FROM %s WHERE email = '$1'", usersTable)
+	//var userID string
+	query := fmt.Sprintf("SELECT id, email, first_name, last_name, password FROM %s WHERE email = '%s'", usersTable, email)
 
 	//rows, err := p.SQLDB.Query(query, username)
 	//if err != nil {
@@ -52,8 +55,9 @@ func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, err
 	//	return nil, err
 	//}
 
-	err := pgxscan.Get(ctx, p.Pool, user, query, strings.TrimSpace(email))
+	err := pgxscan.Get(ctx, p.Pool, user, query)
 	if err != nil {
+		log.Println("Erorr after pgx get")
 		return nil, err
 	}
 
@@ -97,8 +101,8 @@ func (p *Postgres) UpdateUser(ctx context.Context, id string, user *api.UpdateUs
 	return nil
 }
 
-func (p *Postgres) DeleteUser(ctx context.Context, email string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE email='%s'", usersTable, email)
+func (p *Postgres) DeleteUser(ctx context.Context, id string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE id='%s'", usersTable, id)
 
 	_, err := p.Pool.Exec(ctx, query)
 	if err != nil {

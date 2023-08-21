@@ -9,8 +9,8 @@ import (
 type Repository interface {
 	CreateUser(ctx context.Context, u *entity.User) error
 	GetUser(ctx context.Context, email string) (*entity.User, error)
-	UpdateUser(ctx context.Context, email string, req *api.UpdateUserRequest) error
-	DeleteUser(ctx context.Context, email string) error
+	UpdateUser(ctx context.Context, id string, req *api.UpdateUserRequest) error
+	DeleteUser(ctx context.Context, id string) error
 
 	CreateBook(ctx context.Context, req *api.BookRequest) error
 	GetUserBooks(email string) ([]entity.Book, error)
@@ -24,6 +24,12 @@ type Repository interface {
 	GetAuthorById(ctx context.Context, id string) (*entity.Author, error)      //test
 	DeleteAuthor(ctx context.Context, id string) error                         //test
 	UpdateAuthor(ctx context.Context, id string, req *api.AuthorRequest) error //test
+
+	CreateFilePath(ctx context.Context, req *api.FilePathRequest) error            //test
+	GetAllFilePaths(ctx context.Context) ([]entity.FilePath, error)                //test
+	GetFilePathById(ctx context.Context, id string) (*entity.FilePath, error)      //test
+	DeleteFilePath(ctx context.Context, id string) error                           //test
+	UpdateFilePath(ctx context.Context, id string, req *api.FilePathRequest) error //test
 	//UpdateUser(ctx context.Context, u *entity.User) error
 	//DeleteUser(ctx context.Context, id int64) error
 	//VerifyToken(token string) error

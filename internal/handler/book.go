@@ -7,6 +7,7 @@ import (
 	"one-lab/api"
 )
 
+// not ready
 func (h *Handler) userBooks(ctx *gin.Context) {
 	email, ok := ctx.MustGet(authUserID).(string)
 	if !ok {
@@ -23,6 +24,7 @@ func (h *Handler) userBooks(ctx *gin.Context) {
 	//ctx.Status(http.StatusOK)
 }
 
+// ready to test
 func (h *Handler) getAllBooks(ctx *gin.Context) {
 
 	books, err := h.srvs.GetAllBooks(ctx)
@@ -34,6 +36,7 @@ func (h *Handler) getAllBooks(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, books)
 }
 
+// ready to test
 func (h *Handler) getBookById(ctx *gin.Context) {
 
 	bookId := ctx.Param("id")
@@ -46,6 +49,7 @@ func (h *Handler) getBookById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, book)
 }
 
+// ready to test
 func (h *Handler) createBook(ctx *gin.Context) {
 	var req api.BookRequest
 
@@ -63,6 +67,7 @@ func (h *Handler) createBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, req)
 }
 
+// ready to test
 func (h *Handler) updateBook(ctx *gin.Context) {
 	var req api.BookRequest
 
@@ -71,12 +76,12 @@ func (h *Handler) updateBook(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 	bookId := ctx.Param("id")
-	_, err := h.srvs.GetBookById(ctx, bookId)
-
-	if err != nil {
-		log.Printf("Handler book getting by id error %w", err)
-	}
-	err = h.srvs.UpdateBook(ctx, bookId, &req)
+	//_, err := h.srvs.GetBookById(ctx, bookId)
+	//
+	//if err != nil {
+	//	log.Printf("Handler book getting by id error %w", err)
+	//}
+	err := h.srvs.UpdateBook(ctx, bookId, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
 		ctx.JSON(http.StatusBadRequest, err)
@@ -85,6 +90,7 @@ func (h *Handler) updateBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, req)
 }
 
+// ready to test
 func (h *Handler) deleteBook(ctx *gin.Context) {
 
 	bookId := ctx.Param("id")
