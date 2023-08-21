@@ -20,25 +20,26 @@ func (h *Handler) getAllAuthors(ctx *gin.Context) {
 
 func (h *Handler) getAuthorById(ctx *gin.Context) {
 
-	bookId := ctx.Param("id")
-	book, err := h.srvs.GetBookById(ctx, bookId)
+	authorId := ctx.Param("id")
+	author, err := h.srvs.GetAuthorById(ctx, authorId)
 
 	if err != nil {
-		log.Printf("Handler book getting by id error %w", err)
+		ctx.JSON(http.StatusNotFound, err)
+		//log.Printf("Handler author getting by id error %w", err)
 	}
 
-	ctx.JSON(http.StatusOK, book)
+	ctx.JSON(http.StatusOK, author)
 }
 
 func (h *Handler) createAuthor(ctx *gin.Context) {
-	var req api.BookRequest
+	var req api.AuthorRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
 		log.Println("Bind json error ", err.Error())
 		ctx.JSON(http.StatusBadRequest, err)
 	}
 
-	err := h.srvs.CreateBook(ctx, &req)
+	err := h.srvs.CreateAuthor(ctx, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
 		ctx.JSON(http.StatusBadRequest, err)
@@ -48,19 +49,19 @@ func (h *Handler) createAuthor(ctx *gin.Context) {
 }
 
 func (h *Handler) updateAuthor(ctx *gin.Context) {
-	var req api.BookRequest
+	var req api.AuthorRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
 		log.Println("Bind json error ", err.Error())
 		ctx.JSON(http.StatusBadRequest, err)
 	}
-	bookId := ctx.Param("id")
-	_, err := h.srvs.GetBookById(ctx, bookId)
-
-	if err != nil {
-		log.Printf("Handler book getting by id error %w", err)
-	}
-	err = h.srvs.UpdateBook(ctx, bookId, &req)
+	authorId := ctx.Param("id")
+	//_, err := h.srvs.GetBookById(ctx, authorId)
+	//
+	//if err != nil {
+	//	log.Printf("Handler author getting by id error %w", err)
+	//}
+	err := h.srvs.UpdateAuthor(ctx, authorId, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
 		ctx.JSON(http.StatusBadRequest, err)
@@ -71,12 +72,12 @@ func (h *Handler) updateAuthor(ctx *gin.Context) {
 
 func (h *Handler) deleteAuthor(ctx *gin.Context) {
 
-	bookId := ctx.Param("id")
+	authorId := ctx.Param("id")
 
-	err := h.srvs.DeleteBook(ctx, bookId)
+	err := h.srvs.DeleteAuthor(ctx, authorId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
-	ctx.JSON(http.StatusOK, "Book deleted")
+	ctx.JSON(http.StatusOK, "Author deleted")
 }

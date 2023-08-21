@@ -40,7 +40,7 @@ func (m *Manager) Login(ctx context.Context, email, password string) (string, er
 		return "", fmt.Errorf("incorrect password: %w", err)
 	}
 
-	accessToken, err := m.Token.CreateToken(user.Email, m.Config.Token.TimeToLive)
+	accessToken, err := m.Token.CreateToken(user.Id.String(), user.Email, m.Config.Token.TimeToLive)
 	if err != nil {
 		return "", fmt.Errorf("create token err: %w", err)
 	}
@@ -54,12 +54,12 @@ func (m *Manager) VerifyToken(token string) (string, error) {
 		return "", fmt.Errorf("validate token err: %w", err)
 	}
 
-	return claim.Email, nil
+	return claim.UserID, nil
 }
 
-func (m *Manager) UpdateUser(ctx context.Context, email string, req *api.UpdateUserRequest) error {
+func (m *Manager) UpdateUser(ctx context.Context, id string, req *api.UpdateUserRequest) error {
 
-	user, err := m.Repository.GetUser(ctx, email)
+	user, err := m.Repository.GetUser(ctx, id)
 	userID := user.Id
 	if err != nil {
 		return err
@@ -67,10 +67,10 @@ func (m *Manager) UpdateUser(ctx context.Context, email string, req *api.UpdateU
 	return m.Repository.UpdateUser(ctx, userID.String(), req)
 }
 
-func (m *Manager) GetUser(ctx context.Context, email string) (*entity.User, error) {
-	return m.Repository.GetUser(ctx, email)
+func (m *Manager) GetUser(ctx context.Context, id string) (*entity.User, error) {
+	return m.Repository.GetUser(ctx, id)
 }
 
-func (m *Manager) DeleteUser(ctx context.Context, email string) error {
-	return m.Repository.DeleteUser(ctx, email)
+func (m *Manager) DeleteUser(ctx context.Context, id string) error {
+	return m.Repository.DeleteUser(ctx, id)
 }

@@ -17,10 +17,11 @@ func New(secretKey string) *JWTToken {
 	}
 }
 
-func (j *JWTToken) CreateToken(email string, duration time.Duration) (tokenString string, err error) {
+func (j *JWTToken) CreateToken(id string, email string, duration time.Duration) (tokenString string, err error) {
 	expirationTime := time.Now().Add(duration)
 	claims := &JWTClaim{
-		Email: email,
+		UserID: id,
+		Email:  email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},

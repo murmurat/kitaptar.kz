@@ -17,6 +17,7 @@ func (h *Handler) authMiddleware() gin.HandlerFunc {
 			err := errors.New("authorization header is not set")
 			fmt.Println("get auth header err %w", err)
 			ctx.Status(http.StatusUnauthorized)
+			panic(err)
 			return
 		}
 		fields := strings.Fields(authorationHeader)
@@ -24,15 +25,17 @@ func (h *Handler) authMiddleware() gin.HandlerFunc {
 			err := errors.New("authorization header incorrect format")
 			fmt.Println("get auth header err %w", err)
 			ctx.Status(http.StatusUnauthorized)
+			panic(err)
 			return
 		}
-		email, err := h.srvs.VerifyToken(fields[1])
+		userId, err := h.srvs.VerifyToken(fields[1])
 		if err != nil {
 			fmt.Println("get auth header err %w", err)
 			ctx.Status(http.StatusUnauthorized)
+			panic(err)
 			return
 		}
-		ctx.Set(authUserID, email)
+		ctx.Set(authUserID, userId)
 		ctx.Next()
 	}
 
@@ -50,6 +53,20 @@ func getUserEmail(c *gin.Context) (string, error) {
 	}
 
 	return email, nil
+}
+
+func getUserId(c *gin.Context) (string, error) {
+	idDirty, ok := c.Get(authUserID)
+	if !ok {
+		return "", errors.New("user id not found")
+	}
+
+	id, ok := idDirty.(string)
+	if !ok {
+		return "", errors.New("user id is of invalid type")
+	}
+
+	return id, nil
 }
 
 func setNewEmail(c *gin.Context, email string) error {

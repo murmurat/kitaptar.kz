@@ -13,5 +13,7 @@ type Book struct {
 	Name       string    `json:"name" db:"name"`
 	Genre      string    `json:"genre" db:"genre"`
 	ImagePath  string    `json:"image_path" db:"image_path"`
+	FilePathId uuid.UUID `json:"file_path_id" db:"file_path_id"`
+	FilePath   FilePath  `gorm:"foreignKey:file_path_id"`
 	CreatedAt  time.Time
 }
