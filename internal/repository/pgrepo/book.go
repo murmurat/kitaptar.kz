@@ -8,6 +8,7 @@ import (
 	"one-lab/api"
 	"one-lab/internal/entity"
 	"strings"
+	"time"
 )
 
 func (p *Postgres) GetUserBooks(email string) ([]entity.Book, error) {
@@ -24,7 +25,7 @@ func (p *Postgres) GetUserBooks(email string) ([]entity.Book, error) {
 
 func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 	var books []entity.Book
-	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path FROM %s", bookTable)
+	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path, file_path_id FROM %s", bookTable)
 	rows, err := p.Pool.Query(ctx, query)
 	//rows, err := p.SQLDB.Query(query)
 	if err != nil {
@@ -33,7 +34,7 @@ func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 	defer rows.Close()
 	for rows.Next() {
 		book := entity.Book{}
-		err = rows.Scan(&book.Id, &book.Name, &book.Genre, &book.Annotation, &book.AuthorId, &book.ImagePath)
+		err = rows.Scan(&book.Id, &book.Name, &book.Genre, &book.Annotation, &book.AuthorId, &book.ImagePath, &book.FilePathId)
 		books = append(books, book)
 		if err != nil {
 			log.Printf("Scan book values error %s", err.Error())
@@ -51,8 +52,8 @@ func (p *Postgres) GetBookById(ctx context.Context, id string) (*entity.Book, er
 
 	book := new(entity.Book)
 
-	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path FROM %s WHERE id='$1'", bookTable)
-	err := pgxscan.Get(ctx, p.Pool, book, query, strings.TrimSpace(id))
+	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path, file_path_id FROM %s WHERE id='%s'", bookTable, strings.TrimSpace(id))
+	err := pgxscan.Get(ctx, p.Pool, book, query)
 	if err != nil {
 		return nil, err
 	}
@@ -67,13 +68,15 @@ func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) error {
 			                annotation, -- 2
 			                name, -- 3
 			                genre, -- 4
-							image_path
+							image_path, 
+							file_path_id,
+							created_at
 			                )
-			VALUES ($1, $2, $3, $4, $5)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			`, bookTable)
 
 	fmt.Println(req)
-	_, err := p.Pool.Exec(ctx, query, req.AuthorId, req.Annotation, req.Name, req.Genre, req.ImagePath)
+	_, err := p.Pool.Exec(ctx, query, *req.AuthorId, *req.Annotation, *req.Name, *req.Genre, *req.ImagePath, *req.FilePathId, time.Now())
 	if err != nil {
 		return err
 	}
@@ -94,18 +97,25 @@ func (p *Postgres) DeleteBook(ctx context.Context, id string) error {
 func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookRequest) error {
 	values := make([]string, 0)
 
-	if req.Name != "" {
-		values = append(values, fmt.Sprintf("name='%s'", req.Name))
+	if req.Name != nil {
+		values = append(values, fmt.Sprintf("name='%s'", *req.Name))
 	}
-	if req.Annotation != "" {
-		values = append(values, fmt.Sprintf("annotation='%s'", req.Annotation))
+	if req.Annotation != nil {
+		values = append(values, fmt.Sprintf("annotation='%s'", *req.Annotation))
 	}
-	if req.AuthorId.String() != "" {
+	if req.Genre != nil {
+		values = append(values, fmt.Sprintf("genre='%s'", *req.Genre))
+	}
+	if req.AuthorId != nil {
 		// check for existing author
-		values = append(values, fmt.Sprintf("author_id='%s'", req.AuthorId))
+		values = append(values, fmt.Sprintf("author_id='%s'", *req.AuthorId))
 	}
-	if req.ImagePath != "" {
-		values = append(values, fmt.Sprintf("image_path='%s'", req.ImagePath))
+	if req.FilePathId != nil {
+		// check for existing author
+		values = append(values, fmt.Sprintf("file_path_id='%s'", *req.FilePathId))
+	}
+	if req.ImagePath != nil {
+		values = append(values, fmt.Sprintf("image_path='%s'", *req.ImagePath))
 	}
 
 	setQuery := strings.Join(values, ", ")

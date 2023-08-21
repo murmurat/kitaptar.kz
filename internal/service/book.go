@@ -19,10 +19,15 @@ func (m *Manager) GetBookById(ctx context.Context, id string) (*entity.Book, err
 }
 
 func (m *Manager) CreateBook(ctx context.Context, req *api.BookRequest) error {
-	_, err := m.Repository.GetAuthorById(ctx, req.AuthorId.String())
-	if err != nil {
-		return err
-	}
+	//_, err := m.Repository.GetAuthorById(ctx, req.AuthorId.String())
+	//if err != nil {
+	//	log.Println("GET AUTHOR ERROR")
+	//	return err
+	//}
+	//_, err = m.Repository.GetFilePathById(ctx, req.FilePathId.String())
+	//if err != nil {
+	//	return err
+	//}
 
 	return m.Repository.CreateBook(ctx, req)
 }
