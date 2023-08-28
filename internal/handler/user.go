@@ -2,10 +2,10 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 	"log"
 	"net/http"
-	"one-lab/api"
-	"one-lab/internal/entity"
 )
 
 // createUser godoc
@@ -57,6 +57,7 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 	accessToken, err := h.srvs.Login(ctx, req.Email, req.Password)
 	if err != nil {
 		log.Printf("srvs login send err: %s", err.Error())
+		ctx.JSON(http.StatusInternalServerError, err)
 		return
 	}
 	//log.Println("Access Token: ", accessToken)
@@ -95,7 +96,7 @@ func (h *Handler) updateUser(ctx *gin.Context) {
 func (h *Handler) getUser(ctx *gin.Context) {
 	userID, err := getUserId(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusUnauthorized, err)
 	}
 	user, err := h.srvs.GetUser(ctx, userID)
 	if err != nil {
@@ -109,7 +110,7 @@ func (h *Handler) getUser(ctx *gin.Context) {
 func (h *Handler) deleteUser(ctx *gin.Context) {
 	userID, err := getUserId(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusUnauthorized, err)
 	}
 
 	err = h.srvs.DeleteUser(ctx, userID)

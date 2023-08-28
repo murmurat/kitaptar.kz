@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
 	"log"
 	"net/http"
-	"one-lab/api"
 )
 
 //	func (h *Handler) getBookFilePaths(ctx *gin.Context) {
@@ -23,8 +23,8 @@ func (h *Handler) getAllFilePaths(ctx *gin.Context) {
 	filePaths, err := h.srvs.GetAllFilePaths(ctx)
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
 		log.Printf("Handler all file paths getting error %w", err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, filePaths)
@@ -37,6 +37,7 @@ func (h *Handler) getFilePathById(ctx *gin.Context) {
 
 	if err != nil {
 		log.Printf("Handler filePath getting by id error %w", err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, filePath)
@@ -53,7 +54,7 @@ func (h *Handler) createFilePath(ctx *gin.Context) {
 	err := h.srvs.CreateFilePath(ctx, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusCreated, req)
@@ -75,7 +76,7 @@ func (h *Handler) updateFilePath(ctx *gin.Context) {
 	err := h.srvs.UpdateFilePath(ctx, filePathId, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, req)

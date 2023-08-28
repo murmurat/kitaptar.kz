@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"one-lab/api"
-	"one-lab/internal/entity"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 )
 
 func (m *Manager) GetUserBooks(email string) ([]entity.Book, error) {
@@ -37,10 +37,10 @@ func (m *Manager) DeleteBook(ctx context.Context, id string) error {
 }
 
 func (m *Manager) UpdateBook(ctx context.Context, id string, req *api.BookRequest) error {
-	book, err := m.Repository.GetBookById(ctx, id)
-	bookID := book.Id
-	if err != nil {
-		return err
-	}
-	return m.Repository.UpdateBook(ctx, bookID.String(), req)
+	//book, err := m.Repository.GetBookById(ctx, id)
+	//bookID := book.Id
+	//if err != nil {
+	//	return err
+	//}
+	return m.Repository.UpdateBook(ctx, id, req)
 }

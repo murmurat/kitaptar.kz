@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
 	"log"
 	"net/http"
-	"one-lab/api"
 )
 
 // not ready
@@ -31,6 +31,7 @@ func (h *Handler) getAllBooks(ctx *gin.Context) {
 
 	if err != nil {
 		log.Printf("Handler all book getting error %w", err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, books)
@@ -44,6 +45,7 @@ func (h *Handler) getBookById(ctx *gin.Context) {
 
 	if err != nil {
 		log.Printf("Handler book getting by id error %w", err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, book)
@@ -61,7 +63,7 @@ func (h *Handler) createBook(ctx *gin.Context) {
 	err := h.srvs.CreateBook(ctx, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusCreated, req)
@@ -84,7 +86,7 @@ func (h *Handler) updateBook(ctx *gin.Context) {
 	err := h.srvs.UpdateBook(ctx, bookId, &req)
 	if err != nil {
 		log.Printf("Error %w", err)
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusInternalServerError, err)
 	}
 
 	ctx.JSON(http.StatusOK, req)
