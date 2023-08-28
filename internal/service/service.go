@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"one-lab/api"
-	"one-lab/internal/entity"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 )
 
 type Service interface {

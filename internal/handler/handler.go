@@ -1,6 +1,6 @@
 package handler
 
-import "one-lab/internal/service"
+import "github.com/murat96k/kitaptar.kz/internal/service"
 
 type Handler struct {
 	srvs service.Service
