@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 	"log"
-	"one-lab/api"
-	"one-lab/internal/entity"
 	"strings"
 	"time"
 )

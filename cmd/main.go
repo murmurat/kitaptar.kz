@@ -1,9 +1,9 @@
 package main
 
 import (
+	"github.com/murat96k/kitaptar.kz/internal/app"
+	"github.com/murat96k/kitaptar.kz/internal/config"
 	"log"
-	"one-lab/internal/app"
-	"one-lab/internal/config"
 )
 
 // @title           ONE LAB Kitaptar

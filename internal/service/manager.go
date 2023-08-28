@@ -1,9 +1,9 @@
 package service
 
 import (
-	"one-lab/internal/config"
-	"one-lab/internal/repository"
-	"one-lab/pkg/jwttoken"
+	"github.com/murat96k/kitaptar.kz/internal/config"
+	"github.com/murat96k/kitaptar.kz/internal/repository"
+	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
 )
 
 type Manager struct {

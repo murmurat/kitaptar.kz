@@ -1,4 +1,4 @@
-module one-lab
+module github.com/murat96k/kitaptar.kz
 
 go 1.19
 

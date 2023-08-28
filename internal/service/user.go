@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"one-lab/api"
-	"one-lab/internal/entity"
-	"one-lab/pkg/util"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
+	"github.com/murat96k/kitaptar.kz/pkg/util"
 )
 
 func (m *Manager) CreateUser(ctx context.Context, u *entity.User) error {
@@ -59,12 +59,12 @@ func (m *Manager) VerifyToken(token string) (string, error) {
 
 func (m *Manager) UpdateUser(ctx context.Context, id string, req *api.UpdateUserRequest) error {
 
-	user, err := m.Repository.GetUser(ctx, id)
-	userID := user.Id
-	if err != nil {
-		return err
-	}
-	return m.Repository.UpdateUser(ctx, userID.String(), req)
+	//user, err := m.Repository.GetUser(ctx, id)
+	//userID := user.Id
+	//if err != nil {
+	//	return err
+	//}
+	return m.Repository.UpdateUser(ctx, id, req)
 }
 
 func (m *Manager) GetUser(ctx context.Context, id string) (*entity.User, error) {

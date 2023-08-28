@@ -2,13 +2,13 @@ package app
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/murat96k/kitaptar.kz/internal/config"
+	"github.com/murat96k/kitaptar.kz/internal/handler"
+	"github.com/murat96k/kitaptar.kz/internal/repository/pgrepo"
+	"github.com/murat96k/kitaptar.kz/internal/service"
+	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
+	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
 	"log"
-	"one-lab/internal/config"
-	"one-lab/internal/handler"
-	"one-lab/internal/repository/pgrepo"
-	"one-lab/internal/service"
-	"one-lab/pkg/httpserver"
-	"one-lab/pkg/jwttoken"
 	"os"
 	"os/signal"
 )
