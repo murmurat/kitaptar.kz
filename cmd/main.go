@@ -23,13 +23,13 @@ func main() {
 	cfg, err := config.InitConfig("config.yaml")
 
 	if err != nil {
-		log.Printf("config init err %w", err)
+		log.Printf("config init err %s", err)
 		//panic(err)
 	}
 
 	err = app.Run(cfg)
 	if err != nil {
-		log.Printf("config init err %w", err)
+		log.Printf("config init err %s", err)
 		//panic(err)
 	}
 }

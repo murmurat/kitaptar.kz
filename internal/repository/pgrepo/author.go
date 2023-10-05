@@ -50,13 +50,14 @@ func (p *Postgres) GetAuthorById(ctx context.Context, id string) (*entity.Author
 }
 
 func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) error {
+	// Need to flexible code (Like Update queries)
 	query := fmt.Sprintf(`
 			INSERT INTO %s (firstname,lastname, image_path ,about_author, created_at)
 			VALUES ($1, $2, $3, $4, $5)
 			`, authorTable)
 
 	fmt.Println(req)
-	_, err := p.Pool.Exec(ctx, query, *req.Firstname, *req.Lastname, *req.ImagePath, *req.AboutAuthor, time.Now())
+	_, err := p.Pool.Exec(ctx, query, req.Firstname, req.Lastname, req.ImagePath, req.AboutAuthor, time.Now())
 	if err != nil {
 		return err
 	}
@@ -77,18 +78,18 @@ func (p *Postgres) DeleteAuthor(ctx context.Context, id string) error {
 func (p *Postgres) UpdateAuthor(ctx context.Context, id string, req *api.AuthorRequest) error {
 	values := make([]string, 0)
 
-	if req.Firstname != nil {
-		values = append(values, fmt.Sprintf("firstname='%s'", *req.Firstname))
+	if req.Firstname != "" {
+		values = append(values, fmt.Sprintf("firstname='%s'", req.Firstname))
 	}
-	if req.Lastname != nil {
-		values = append(values, fmt.Sprintf("lastname='%s'", *req.Lastname))
+	if req.Lastname != "" {
+		values = append(values, fmt.Sprintf("lastname='%s'", req.Lastname))
 	}
-	if req.AboutAuthor != nil {
+	if req.AboutAuthor != "" {
 		// check for existing author
-		values = append(values, fmt.Sprintf("about_author='%s'", *req.AboutAuthor))
+		values = append(values, fmt.Sprintf("about_author='%s'", req.AboutAuthor))
 	}
-	if req.ImagePath != nil {
-		values = append(values, fmt.Sprintf("image_path='%s'", *req.ImagePath))
+	if req.ImagePath != "" {
+		values = append(values, fmt.Sprintf("image_path='%s'", req.ImagePath))
 	}
 
 	setQuery := strings.Join(values, ", ")

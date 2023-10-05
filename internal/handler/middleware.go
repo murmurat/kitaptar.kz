@@ -2,8 +2,8 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
 	"net/http"
 	"strings"
 )
@@ -12,47 +12,30 @@ const authUserID = "auth_user_id"
 
 func (h *Handler) authMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		authorationHeader := ctx.GetHeader("authorization")
-		if authorationHeader == "" {
-			err := errors.New("authorization header is not set")
-			fmt.Println("get auth header err %w", err)
-			ctx.Status(http.StatusUnauthorized)
-			panic(err)
+		authorizationHeader := ctx.GetHeader("Authorization")
+
+		if authorizationHeader == "" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: "authorization header is not set"})
 			return
 		}
-		fields := strings.Fields(authorationHeader)
-		if len(fields) < 2 {
-			err := errors.New("authorization header incorrect format")
-			fmt.Println("get auth header err %w", err)
-			ctx.Status(http.StatusUnauthorized)
-			panic(err)
+		headerParts := strings.Split(authorizationHeader, " ")
+		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: "invalid header value"})
 			return
 		}
-		userId, err := h.srvs.VerifyToken(fields[1])
+		if len(headerParts[1]) == 0 {
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: "empty token"})
+			return
+		}
+		userId, err := h.srvs.VerifyToken(headerParts[1])
 		if err != nil {
-			fmt.Println("get auth header err %w", err)
-			ctx.Status(http.StatusUnauthorized)
-			panic(err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: "invalid token"})
 			return
 		}
 		ctx.Set(authUserID, userId)
 		ctx.Next()
 	}
 
-}
-
-func getUserEmail(c *gin.Context) (string, error) {
-	emailDirty, ok := c.Get(authUserID)
-	if !ok {
-		return "", errors.New("user email not found")
-	}
-
-	email, ok := emailDirty.(string)
-	if !ok {
-		return "", errors.New("user email is of invalid type")
-	}
-
-	return email, nil
 }
 
 func getUserId(c *gin.Context) (string, error) {
@@ -67,9 +50,4 @@ func getUserId(c *gin.Context) (string, error) {
 	}
 
 	return id, nil
-}
-
-func setNewEmail(c *gin.Context, email string) error {
-	c.Set(authUserID, email)
-	return nil
 }

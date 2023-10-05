@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/georgysavva/scany/pgxscan"
+	"github.com/google/uuid"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
 	"log"
@@ -76,7 +77,7 @@ func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) error {
 			`, bookTable)
 
 	fmt.Println(req)
-	_, err := p.Pool.Exec(ctx, query, *req.AuthorId, *req.Annotation, *req.Name, *req.Genre, *req.ImagePath, *req.FilePathId, time.Now())
+	_, err := p.Pool.Exec(ctx, query, req.AuthorId, req.Annotation, req.Name, req.Genre, req.ImagePath, req.FilePathId, time.Now())
 	if err != nil {
 		return err
 	}
@@ -97,25 +98,25 @@ func (p *Postgres) DeleteBook(ctx context.Context, id string) error {
 func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookRequest) error {
 	values := make([]string, 0)
 
-	if req.Name != nil {
-		values = append(values, fmt.Sprintf("name='%s'", *req.Name))
+	if req.Name != "" {
+		values = append(values, fmt.Sprintf("name='%s'", req.Name))
 	}
-	if req.Annotation != nil {
-		values = append(values, fmt.Sprintf("annotation='%s'", *req.Annotation))
+	if req.Annotation != "" {
+		values = append(values, fmt.Sprintf("annotation='%s'", req.Annotation))
 	}
-	if req.Genre != nil {
-		values = append(values, fmt.Sprintf("genre='%s'", *req.Genre))
+	if req.Genre != "" {
+		values = append(values, fmt.Sprintf("genre='%s'", req.Genre))
 	}
-	if req.AuthorId != nil {
+	if req.AuthorId != uuid.Nil {
 		// check for existing author
-		values = append(values, fmt.Sprintf("author_id='%s'", *req.AuthorId))
+		values = append(values, fmt.Sprintf("author_id='%s'", req.AuthorId))
 	}
-	if req.FilePathId != nil {
+	if req.FilePathId != uuid.Nil {
 		// check for existing author
-		values = append(values, fmt.Sprintf("file_path_id='%s'", *req.FilePathId))
+		values = append(values, fmt.Sprintf("file_path_id='%s'", req.FilePathId))
 	}
-	if req.ImagePath != nil {
-		values = append(values, fmt.Sprintf("image_path='%s'", *req.ImagePath))
+	if req.ImagePath != "" {
+		values = append(values, fmt.Sprintf("image_path='%s'", req.ImagePath))
 	}
 
 	setQuery := strings.Join(values, ", ")

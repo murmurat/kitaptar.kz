@@ -57,7 +57,7 @@ func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, err
 
 	err := pgxscan.Get(ctx, p.Pool, user, query)
 	if err != nil {
-		log.Println("Erorr after pgx get")
+		log.Println("Error after pgx get")
 		return nil, err
 	}
 

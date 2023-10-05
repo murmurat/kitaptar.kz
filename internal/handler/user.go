@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"log"
 	"net/http"
 )
 
@@ -20,87 +19,76 @@ import (
 // @Failure      500  {object}  api.Error
 // @Router       /register [post]
 func (h *Handler) createUser(ctx *gin.Context) {
-	//var req api.RegisterRequest
 	var req entity.User
-	err := ctx.ShouldBindJSON(&req)
-	if err != nil {
-		log.Printf("bind json err: %s \n", err.Error())
-		ctx.JSON(http.StatusBadRequest, api.Error{err.Error()})
+
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{"invalid input body"})
 		return
 	}
 
-	//u := &entity.User{
-	//	Email:     req.Email,
-	//	FirstName: req.FirstName,
-	//	LastName:  req.LastName,
-	//	Password:  req.Password,
-	//}
-
-	err = h.srvs.CreateUser(ctx, &req)
+	err := h.srvs.CreateUser(ctx, &req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, api.Error{err.Error()})
 		return
 	}
-	//ctx.JSON(http.StatusCreated, req)
 	ctx.Status(http.StatusCreated)
 }
 
 func (h *Handler) loginUser(ctx *gin.Context) {
 	var req api.LoginRequest
 
-	err := ctx.ShouldBindJSON(&req)
-	if err != nil {
-		log.Printf("bind json err: %s \n", err.Error())
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{"invalid input body"})
 		return
 	}
 
 	accessToken, err := h.srvs.Login(ctx, req.Email, req.Password)
 	if err != nil {
-		log.Printf("srvs login send err: %s", err.Error())
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{err.Error()})
 		return
 	}
-	//log.Println("Access Token: ", accessToken)
-	//ctx.Status(http.StatusOK)
+
 	ctx.JSON(http.StatusOK, accessToken)
 }
 
 func (h *Handler) updateUser(ctx *gin.Context) {
 	var req api.UpdateUserRequest
-	//id := ctx.Params.ByName("id")
+
 	userID, err := getUserId(ctx)
-	//email, err := getUserEmail(ctx)
+
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: err.Error()})
+		return
 	}
 
 	if err := ctx.BindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: err.Error()})
+		return
+	}
+
+	if req == (api.UpdateUserRequest{}) {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{"something went wrong"})
+		return
 	}
 	err = h.srvs.UpdateUser(ctx, userID, &req)
 	if err != nil {
-		log.Println(err)
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{err.Error()})
+		return
 	}
-	//var person Person
-	//id := c.Params.ByName(“id”)
-	//if err := db.Where(“id = ?”, id).First(&person).Error; err != nil {
-	//	c.AbortWithStatus(404)
-	//	fmt.Println(err)
-	//}
-	//c.BindJSON(&person)
-	//db.Save(&person)
-	//c.JSON(200, person)
+
+	ctx.JSON(http.StatusOK, api.Response{"User data updated!"})
 }
 
 func (h *Handler) getUser(ctx *gin.Context) {
 	userID, err := getUserId(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, err)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, err)
+		return
 	}
 	user, err := h.srvs.GetUser(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{err.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusFound, user)
@@ -110,13 +98,15 @@ func (h *Handler) getUser(ctx *gin.Context) {
 func (h *Handler) deleteUser(ctx *gin.Context) {
 	userID, err := getUserId(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, err)
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, api.Error{Message: err.Error()})
+		return
 	}
 
 	err = h.srvs.DeleteUser(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, "User deleted")
+	ctx.JSON(http.StatusOK, api.Response{"User deleted"})
 }
