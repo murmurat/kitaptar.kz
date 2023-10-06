@@ -226,12 +226,12 @@ func TestHandler_getFilePathById(t *testing.T) {
 			expectedResponseBody: `{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"test","fb2":"test","epub":"test","docx":"test","CreatedAt":"0001-01-01T00:00:00Z"}`,
 		},
 		{
-			name:    "Empty author id",
+			name:    "Empty file path id",
 			inputID: "",
 			mockBehavior: func(s *mock_service.MockService, authorID string) {
 
 			},
-			expectedStatusCode:   404, //400
+			expectedStatusCode:   404,
 			expectedResponseBody: `404 page not found`,
 		},
 		{
@@ -313,7 +313,7 @@ func TestHandler_deleteFilePath(t *testing.T) {
 		{
 			name:    "Request by not authorizing user",
 			inputID: "lalksdmvklasndvklsaklv",
-			mockBehavior: func(s *mock_service.MockService, authorID string) {
+			mockBehavior: func(s *mock_service.MockService, filePathID string) {
 				s.EXPECT().VerifyToken("token").Return("", errors.New("error"))
 
 			},

@@ -234,16 +234,15 @@ func TestHandler_getBookById(t *testing.T) {
 				}, nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"author_id":"9634d0d0-ba9f-4516-9459-83eb58ebdb86","firstname":"Meiirzhan","lastname":"Uristemov","image_path":"meiir_path","about_author":"Meiirzhan is very good programmer","CreatedAt":"0001-01-01T00:00:00Z"}`,
+			expectedResponseBody: `{"book_id":"00000000-0000-0000-0000-000000000000","author_id":"00000000-0000-0000-0000-000000000000","Author":{"author_id":"00000000-0000-0000-0000-000000000000","firstname":"","lastname":"","image_path":"","about_author":"","CreatedAt":"0001-01-01T00:00:00Z"},"annotation":"test_annotation","name":"test_name","genre":"test_genre","image_path":"test_image_path","file_path_id":"00000000-0000-0000-0000-000000000000","FilePath":{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"","fb2":"","epub":"","docx":"","CreatedAt":"0001-01-01T00:00:00Z"},"CreatedAt":"0001-01-01T00:00:00Z"}`,
 		},
 		{
-			name:    "Empty author id",
+			name:    "Empty book id",
 			inputID: "",
-			mockBehavior: func(s *mock_service.MockService, authorID string) {
-				s.EXPECT().VerifyToken("token").Return(userID, nil)
+			mockBehavior: func(s *mock_service.MockService, bookID string) {
 			},
-			expectedStatusCode:   400,
-			expectedResponseBody: `{"message":"author id is empty"}`,
+			expectedStatusCode:   404,
+			expectedResponseBody: `404 page not found`,
 		},
 		{
 			name:    "Service error",
@@ -268,7 +267,7 @@ func TestHandler_getBookById(t *testing.T) {
 			mockHandler := New(mockService)
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", strings.TrimSpace(fmt.Sprintf("/author/%s", testCase.inputID)), bytes.NewBufferString(testCase.inputID))
+			request := httptest.NewRequest("GET", strings.TrimSpace(fmt.Sprintf("/book/%s", testCase.inputID)), bytes.NewBufferString(testCase.inputID))
 			fmt.Println("Request URL: ", request.URL)
 			request.Header.Set("Authorization", "Bearer token")
 
@@ -324,7 +323,7 @@ func TestHandler_deleteBook(t *testing.T) {
 		{
 			name:    "Request by not authorizing user",
 			inputID: "lalksdmvklasndvklsaklv",
-			mockBehavior: func(s *mock_service.MockService, authorID string) {
+			mockBehavior: func(s *mock_service.MockService, bookID string) {
 				s.EXPECT().VerifyToken("token").Return("", errors.New("error"))
 			},
 			expectedStatusCode:   401,

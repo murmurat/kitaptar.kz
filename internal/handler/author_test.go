@@ -72,7 +72,7 @@ func TestHandler_createAuthor(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, author api.AuthorRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(errors.New("test"))
+				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(errors.New("something went wrong"))
 
 			},
 			expectedStatusCode:   500,
@@ -161,7 +161,7 @@ func TestHandler_updateAuthor(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, authorID string, author *api.AuthorRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().UpdateAuthor(gomock.Any(), authorID, author).Return(errors.New("test"))
+				s.EXPECT().UpdateAuthor(gomock.Any(), authorID, author).Return(errors.New("something went wrong"))
 
 			},
 			expectedStatusCode:   500,
@@ -223,11 +223,9 @@ func TestHandler_getAuthorById(t *testing.T) {
 			name:     "Empty author id",
 			authorID: "",
 			mockBehavior: func(s *mock_service.MockService, authorID string) {
-				s.EXPECT().VerifyToken("token").Return(userID, nil)
-
 			},
-			expectedStatusCode:   400, //400
-			expectedResponseBody: `{"message":"author id is empty"}`,
+			expectedStatusCode:   404,
+			expectedResponseBody: `404 page not found`,
 		},
 		{
 			name:     "Service error",
