@@ -1,15 +1,14 @@
-package passwordtest
+package util
 
 import (
 	"github.com/stretchr/testify/require"
-	"one-lab/pkg/util"
 	"testing"
 )
 
 const password = "testpassword"
 
 func TestHashPassword(t *testing.T) {
-	hashedpassword, err := util.HashPassword(password)
+	hashedpassword, err := HashPassword(password)
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedpassword)
 	require.NotEqual(t, hashedpassword, "")
@@ -18,12 +17,12 @@ func TestHashPassword(t *testing.T) {
 }
 
 func TestCheckPassword(t *testing.T) {
-	hashedpassword, err := util.HashPassword(password)
-	err = util.CheckPassword(password, hashedpassword)
+	hashedpassword, err := HashPassword(password)
+	err = CheckPassword(password, hashedpassword)
 	require.NoError(t, err)
 	require.Nil(t, err)
 
-	err = util.CheckPassword("incorrect_password", hashedpassword)
+	err = CheckPassword("incorrect_password", hashedpassword)
 	require.Error(t, err)
 	require.NotNil(t, err)
 }

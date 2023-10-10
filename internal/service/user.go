@@ -10,19 +10,15 @@ import (
 	"github.com/murat96k/kitaptar.kz/pkg/util"
 )
 
-func (m *Manager) CreateUser(ctx context.Context, u *entity.User) error {
+func (m *Manager) CreateUser(ctx context.Context, u *entity.User) (string, error) {
 	hashPassword, err := util.HashPassword(u.Password)
 	if err != nil {
-		return fmt.Errorf("hash password error %w", err)
+		return "", fmt.Errorf("hash password error %w", err)
 	}
 
 	u.Password = hashPassword
-	err = m.Repository.CreateUser(ctx, u)
-	if err != nil {
-		return err
-	}
 
-	return nil
+	return m.Repository.CreateUser(ctx, u)
 }
 
 func (m *Manager) Login(ctx context.Context, email, password string) (string, error) {

@@ -43,11 +43,11 @@ func New(opts ...Option) (*Postgres, error) {
 
 	poolConfig, err := pgxpool.ParseConfig(u.String())
 	if err != nil {
-		return nil, fmt.Errorf("pgxpool config error %w", err.Error())
+		return nil, fmt.Errorf("pgxpool config error %s", err.Error())
 	}
 	p.Pool, err = pgxpool.ConnectConfig(context.Background(), poolConfig)
 	if err != nil {
-		return nil, fmt.Errorf("pgxpool connect err: %w", err)
+		return nil, fmt.Errorf("pgxpool connect err: %s", err)
 	}
 	return p, nil
 }

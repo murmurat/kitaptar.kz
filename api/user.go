@@ -18,7 +18,3 @@ type UpdateUserRequest struct {
 //	LastName  string `json:"last_name" db:"last_name" binding:"required"`
 //	Password  string `json:"password" db:"password" binding:"required"`
 //}
-
-type Error struct {
-	Message string `json:"message"`
-}
