@@ -43,13 +43,13 @@ func (h *Handler) createAuthor(ctx *gin.Context) {
 		return
 	}
 
-	err := h.srvs.CreateAuthor(ctx, &req)
+	authorId, err := h.srvs.CreateAuthor(ctx, &req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, req)
+	ctx.JSON(http.StatusCreated, api.Response{Message: authorId})
 }
 
 func (h *Handler) updateAuthor(ctx *gin.Context) {

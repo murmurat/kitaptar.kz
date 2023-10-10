@@ -15,7 +15,7 @@ import (
 
 func TestHandler_createUser(t *testing.T) {
 	type mockBehavior = func(s *mock_service.MockService, user entity.User)
-
+	userID := "e79e360e-cb68-40a1-911e-a8a75068ef79"
 	testTable := []struct {
 		name                 string
 		inputBody            string
@@ -34,11 +34,11 @@ func TestHandler_createUser(t *testing.T) {
 				Email:     "test_mockuser@gmail.com",
 			},
 			mockBehavior: func(s *mock_service.MockService, user entity.User) {
-				s.EXPECT().CreateUser(gomock.Any(), &user).Return(nil)
+				s.EXPECT().CreateUser(gomock.Any(), &user).Return(userID, nil)
 
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: "",
+			expectedResponseBody: `{"message":"e79e360e-cb68-40a1-911e-a8a75068ef79"}`,
 		},
 		{
 			name:                 "Wrong input (Missing firstname)",
@@ -58,7 +58,7 @@ func TestHandler_createUser(t *testing.T) {
 				Email:     "test_mockuser@gmail.com",
 			},
 			mockBehavior: func(s *mock_service.MockService, user entity.User) {
-				s.EXPECT().CreateUser(gomock.Any(), &user).Return(errors.New("something went wrong"))
+				s.EXPECT().CreateUser(gomock.Any(), &user).Return("", errors.New("something went wrong"))
 
 			},
 			expectedStatusCode:   500,

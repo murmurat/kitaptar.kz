@@ -49,21 +49,28 @@ func (p *Postgres) GetAuthorById(ctx context.Context, id string) (*entity.Author
 	return author, nil
 }
 
-func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) error {
-	// Need to flexible code (Like Update queries)
-	query := fmt.Sprintf(`
-			INSERT INTO %s (firstname,lastname, image_path ,about_author, created_at)
-			VALUES ($1, $2, $3, $4, $5)
-			`, authorTable)
-
-	fmt.Println(req)
-	_, err := p.Pool.Exec(ctx, query, req.Firstname, req.Lastname, req.ImagePath, req.AboutAuthor, time.Now())
+func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (string, error) {
+	tx, err := p.Pool.Begin(ctx)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	var authorId string
+	// Need to flexible code (Like Update queries)
+	query := fmt.Sprintf(`
+			INSERT INTO %s (firstname, lastname, image_path ,about_author, created_at)
+			VALUES ($1, $2, $3, $4, $5) RETURNING id
+			`, authorTable)
+
+	err = p.Pool.QueryRow(ctx, query, req.Firstname, req.Lastname, req.ImagePath, req.AboutAuthor, time.Now()).Scan(&authorId)
+	if err != nil {
+		tx.Rollback(ctx)
+		return "", err
+	}
+
+	return authorId, tx.Commit(ctx)
 }
+
 func (p *Postgres) DeleteAuthor(ctx context.Context, id string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id='%s'", authorTable, id)
 
@@ -97,7 +104,6 @@ func (p *Postgres) UpdateAuthor(ctx context.Context, id string, req *api.AuthorR
 	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
 	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", authorTable, setQuery, id)
-	fmt.Println(query)
 
 	_, err := p.Pool.Exec(ctx, query)
 	if err != nil {

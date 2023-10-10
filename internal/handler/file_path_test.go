@@ -17,6 +17,7 @@ import (
 func TestHandler_createFilePath(t *testing.T) {
 	type mockBehavior = func(s *mock_service.MockService, filePath *api.FilePathRequest)
 	userID := "e79e360e-cb68-40a1-911e-a8a75068ef79"
+	filePathID := "7d02919a-12b7-44a2-9382-8ad8664076ca"
 
 	testTable := []struct {
 		name                 string
@@ -37,10 +38,10 @@ func TestHandler_createFilePath(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, filePath *api.FilePathRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return(nil)
+				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return(filePathID, nil)
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"test","fb2":"test","epub":"test","docx":"test"}`,
+			expectedResponseBody: `{"message":"7d02919a-12b7-44a2-9382-8ad8664076ca"}`,
 		},
 		{
 			name:      "Wrong input (Missing mobi)",
@@ -52,10 +53,10 @@ func TestHandler_createFilePath(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, filePath *api.FilePathRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return(nil)
+				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return(filePathID, nil)
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"","fb2":"test","epub":"test","docx":"test"}`,
+			expectedResponseBody: `{"message":"7d02919a-12b7-44a2-9382-8ad8664076ca"}`,
 		},
 		{
 			name:      "Service error",
@@ -68,7 +69,7 @@ func TestHandler_createFilePath(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, filePath *api.FilePathRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return(errors.New("something went wrong"))
+				s.EXPECT().CreateFilePath(gomock.Any(), filePath).Return("", errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"something went wrong"}`,
@@ -125,7 +126,7 @@ func TestHandler_updateFilePath(t *testing.T) {
 				s.EXPECT().UpdateFilePath(gomock.Any(), filePathID, filePath).Return(nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"test","fb2":"test","epub":"test","docx":"test"}`,
+			expectedResponseBody: `{"mobi":"test","fb2":"test","epub":"test","docx":"test"}`,
 		},
 		{
 			name:            "Input with missing mobi",
@@ -141,7 +142,7 @@ func TestHandler_updateFilePath(t *testing.T) {
 				s.EXPECT().UpdateFilePath(gomock.Any(), filePathID, filePath).Return(nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"file_path_id":"00000000-0000-0000-0000-000000000000","mobi":"","fb2":"test","epub":"test","docx":"test"}`,
+			expectedResponseBody: `{"mobi":"","fb2":"test","epub":"test","docx":"test"}`,
 		},
 		{
 			name:            "Service error",

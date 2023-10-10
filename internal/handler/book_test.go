@@ -18,7 +18,7 @@ import (
 func TestHandler_createBook(t *testing.T) {
 	type mockBehavior = func(s *mock_service.MockService, book *api.BookRequest)
 	userID := "e79e360e-cb68-40a1-911e-a8a75068ef79"
-
+	bookID := "00ea62a1-2722-46b7-a8c6-0d146ad4893f"
 	testTable := []struct {
 		name                 string
 		inputBody            string
@@ -39,10 +39,10 @@ func TestHandler_createBook(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, book *api.BookRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateBook(gomock.Any(), book).Return(nil)
+				s.EXPECT().CreateBook(gomock.Any(), book).Return(bookID, nil)
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","annotation":"test_annotation","name":"test_name","genre":"test_genre","image_path":"test_image_path","file_path_id":"00000000-0000-0000-0000-000000000000"}`,
+			expectedResponseBody: `{"message":"00ea62a1-2722-46b7-a8c6-0d146ad4893f"}`,
 		},
 		{
 			name:      "Wrong input (Missing annotation)",
@@ -55,10 +55,10 @@ func TestHandler_createBook(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, book *api.BookRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateBook(gomock.Any(), book).Return(nil)
+				s.EXPECT().CreateBook(gomock.Any(), book).Return(bookID, nil)
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","annotation":"","name":"test_name","genre":"test_genre","image_path":"test_image_path","file_path_id":"00000000-0000-0000-0000-000000000000"}`,
+			expectedResponseBody: `{"message":"00ea62a1-2722-46b7-a8c6-0d146ad4893f"}`,
 		},
 		{
 			name:      "Service error",
@@ -72,7 +72,7 @@ func TestHandler_createBook(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, book *api.BookRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateBook(gomock.Any(), book).Return(errors.New("something went wrong"))
+				s.EXPECT().CreateBook(gomock.Any(), book).Return("", errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"something went wrong"}`,

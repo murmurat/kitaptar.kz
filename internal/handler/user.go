@@ -26,12 +26,12 @@ func (h *Handler) createUser(ctx *gin.Context) {
 		return
 	}
 
-	err := h.srvs.CreateUser(ctx, &req)
+	userId, err := h.srvs.CreateUser(ctx, &req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, api.Error{err.Error()})
 		return
 	}
-	ctx.Status(http.StatusCreated)
+	ctx.JSON(http.StatusCreated, api.Response{Message: userId})
 }
 
 func (h *Handler) loginUser(ctx *gin.Context) {

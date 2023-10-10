@@ -37,11 +37,12 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // CreateAuthor mocks base method.
-func (m *MockService) CreateAuthor(ctx context.Context, req *api.AuthorRequest) error {
+func (m *MockService) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAuthor", ctx, req)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateAuthor indicates an expected call of CreateAuthor.
@@ -51,11 +52,12 @@ func (mr *MockServiceMockRecorder) CreateAuthor(ctx, req interface{}) *gomock.Ca
 }
 
 // CreateBook mocks base method.
-func (m *MockService) CreateBook(ctx context.Context, req *api.BookRequest) error {
+func (m *MockService) CreateBook(ctx context.Context, req *api.BookRequest) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateBook", ctx, req)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateBook indicates an expected call of CreateBook.
@@ -65,11 +67,12 @@ func (mr *MockServiceMockRecorder) CreateBook(ctx, req interface{}) *gomock.Call
 }
 
 // CreateFilePath mocks base method.
-func (m *MockService) CreateFilePath(ctx context.Context, req *api.FilePathRequest) error {
+func (m *MockService) CreateFilePath(ctx context.Context, req *api.FilePathRequest) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateFilePath", ctx, req)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateFilePath indicates an expected call of CreateFilePath.
@@ -79,11 +82,12 @@ func (mr *MockServiceMockRecorder) CreateFilePath(ctx, req interface{}) *gomock.
 }
 
 // CreateUser mocks base method.
-func (m *MockService) CreateUser(ctx context.Context, u *entity.User) error {
+func (m *MockService) CreateUser(ctx context.Context, u *entity.User) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, u)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateUser indicates an expected call of CreateUser.

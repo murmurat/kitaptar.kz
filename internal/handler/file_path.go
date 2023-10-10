@@ -55,13 +55,13 @@ func (h *Handler) createFilePath(ctx *gin.Context) {
 		return
 	}
 
-	err := h.srvs.CreateFilePath(ctx, &req)
+	filePathId, err := h.srvs.CreateFilePath(ctx, &req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, req)
+	ctx.JSON(http.StatusCreated, api.Response{Message: filePathId})
 }
 
 func (h *Handler) updateFilePath(ctx *gin.Context) {

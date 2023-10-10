@@ -60,13 +60,13 @@ func (h *Handler) createBook(ctx *gin.Context) {
 		return
 	}
 
-	err := h.srvs.CreateBook(ctx, &req)
+	bookId, err := h.srvs.CreateBook(ctx, &req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, req)
+	ctx.JSON(http.StatusCreated, api.Response{Message: bookId})
 }
 
 func (h *Handler) updateBook(ctx *gin.Context) {

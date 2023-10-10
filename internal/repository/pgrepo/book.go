@@ -62,7 +62,15 @@ func (p *Postgres) GetBookById(ctx context.Context, id string) (*entity.Book, er
 	return book, nil
 }
 
-func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) error {
+func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) (string, error) {
+
+	tx, err := p.Pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var bookId string
+	// Need to flexible code (Like Update queries)
 	query := fmt.Sprintf(`
 			INSERT INTO %s (
 			                author_id, -- 1 
@@ -73,17 +81,17 @@ func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) error {
 							file_path_id,
 							created_at
 			                )
-			VALUES ($1, $2, $3, $4, $5, $6, $7)
+			VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id
 			`, bookTable)
-
-	fmt.Println(req)
-	_, err := p.Pool.Exec(ctx, query, req.AuthorId, req.Annotation, req.Name, req.Genre, req.ImagePath, req.FilePathId, time.Now())
+	err = p.Pool.QueryRow(ctx, query, req.AuthorId, req.Annotation, req.Name, req.Genre, req.ImagePath, req.FilePathId, time.Now()).Scan(&bookId)
 	if err != nil {
-		return err
+		tx.Rollback(ctx)
+		return "", err
 	}
 
-	return nil
+	return bookId, tx.Commit(ctx)
 }
+
 func (p *Postgres) DeleteBook(ctx context.Context, id string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id='%s'", bookTable, id)
 

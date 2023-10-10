@@ -19,7 +19,7 @@ import (
 func TestHandler_createAuthor(t *testing.T) {
 	type mockBehavior = func(s *mock_service.MockService, author api.AuthorRequest)
 	userID := "e79e360e-cb68-40a1-911e-a8a75068ef79"
-
+	authorID := "5e442e63-be98-493e-9943-58f708e2f1df"
 	testTable := []struct {
 		name                 string
 		inputBody            string
@@ -39,11 +39,11 @@ func TestHandler_createAuthor(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, author api.AuthorRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(nil)
+				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(authorID, nil)
 
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","firstname":"Test_author","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
+			expectedResponseBody: `{"message":"5e442e63-be98-493e-9943-58f708e2f1df"}`,
 		},
 		{
 			name:      "Wrong input (Missing firstname)",
@@ -55,11 +55,11 @@ func TestHandler_createAuthor(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, author api.AuthorRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(nil)
+				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(authorID, nil)
 
 			},
 			expectedStatusCode:   201,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","firstname":"","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
+			expectedResponseBody: `{"message":"5e442e63-be98-493e-9943-58f708e2f1df"}`,
 		},
 		{
 			name:      "Service error",
@@ -72,7 +72,7 @@ func TestHandler_createAuthor(t *testing.T) {
 			},
 			mockBehavior: func(s *mock_service.MockService, author api.AuthorRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return(errors.New("something went wrong"))
+				s.EXPECT().CreateAuthor(gomock.Any(), &author).Return("", errors.New("something went wrong"))
 
 			},
 			expectedStatusCode:   500,
@@ -131,7 +131,7 @@ func TestHandler_updateAuthor(t *testing.T) {
 
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","firstname":"Test_author","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
+			expectedResponseBody: `{"firstname":"Test_author","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
 		},
 		{
 			name:      "Input with missing firstname",
@@ -147,7 +147,7 @@ func TestHandler_updateAuthor(t *testing.T) {
 				s.EXPECT().UpdateAuthor(gomock.Any(), authorID, author).Return(nil)
 			},
 			expectedStatusCode:   200,
-			expectedResponseBody: `{"author_id":"00000000-0000-0000-0000-000000000000","firstname":"","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
+			expectedResponseBody: `{"firstname":"","lastname":"Test_author","image_path":"test_url","about_author":"test_description"}`,
 		},
 		{
 			name:      "Service error",
