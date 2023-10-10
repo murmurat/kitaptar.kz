@@ -30,7 +30,7 @@ func Run(cfg *config.Config) error {
 		pgrepo.WithPassword(cfg.DB.Password),
 	)
 	if err != nil {
-		log.Printf("connection to DB error %w", err)
+		log.Printf("connection to DB error %s", err)
 	}
 
 	token := jwttoken.New(cfg.Token.SecretKey)

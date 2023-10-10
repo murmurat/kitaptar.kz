@@ -12,25 +12,32 @@ import (
 	"time"
 )
 
-func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) error {
+func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) (string, error) {
+
+	tx, err := p.Pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var userId string
 	query := fmt.Sprintf(`
 			INSERT INTO %s (
 			                email, -- 1 
 			                first_name, -- 2
 			                last_name, -- 3
-			                password -- 4,
+			                password, -- 4,
 							created_at
 			                )
-			VALUES ($1, $2, $3, $4, $5)
+			VALUES ($1, $2, $3, $4, $5) RETURNING id
 			`, usersTable)
 
-	fmt.Println(u)
-	_, err := p.Pool.Exec(ctx, query, u.Email, u.FirstName, u.LastName, u.Password, time.Now())
+	err = p.Pool.QueryRow(ctx, query, u.Email, u.FirstName, u.LastName, u.Password, time.Now()).Scan(&userId)
 	if err != nil {
-		return err
+		tx.Rollback(ctx)
+		return "", err
 	}
 
-	return nil
+	return userId, tx.Commit(ctx)
 }
 
 func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, error) {
@@ -57,7 +64,7 @@ func (p *Postgres) GetUser(ctx context.Context, email string) (*entity.User, err
 
 	err := pgxscan.Get(ctx, p.Pool, user, query)
 	if err != nil {
-		log.Println("Erorr after pgx get")
+		log.Println("Error after pgx get")
 		return nil, err
 	}
 

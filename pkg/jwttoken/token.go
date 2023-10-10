@@ -30,7 +30,7 @@ func (j *JWTToken) CreateToken(id string, email string, duration time.Duration) 
 	//fmt.Println("Secret key: ", j.secretKey)
 	tokenString, err = token.SignedString([]byte(j.secretKey))
 	if err != nil {
-		log.Printf("Token sign error %w", err)
+		log.Printf("Token sign error %s", err)
 		return "", err
 	}
 	return tokenString, nil

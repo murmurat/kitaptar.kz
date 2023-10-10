@@ -14,7 +14,7 @@ func (m *Manager) GetFilePathById(ctx context.Context, id string) (*entity.FileP
 	return m.Repository.GetFilePathById(ctx, id)
 }
 
-func (m *Manager) CreateFilePath(ctx context.Context, req *api.FilePathRequest) error {
+func (m *Manager) CreateFilePath(ctx context.Context, req *api.FilePathRequest) (string, error) {
 	return m.Repository.CreateFilePath(ctx, req)
 }
 
