@@ -15,29 +15,40 @@ func (h *Handler) InitRouter() *gin.Engine {
 	router.POST("/register", h.createUser)
 	router.POST("/login", h.loginUser)
 
-	router.Use(h.authMiddleware())
-	router.GET("/user/books", h.userBooks)          // not realised
-	router.GET("/book/:id", h.getBookById)          // checked
-	router.GET("/books", h.getAllBooks)             // checked
-	router.POST("/book/create", h.createBook)       // checked
-	router.DELETE("/book/delete/:id", h.deleteBook) // checked
-	router.PUT("/book/update/:id", h.updateBook)    // checked
+	user := router.Group("/user", h.authMiddleware())
+	{
+		user.PUT("/update", h.updateUser)
+		user.DELETE("/delete", h.deleteUser)
+		user.GET("/data", h.getUser)
+	}
 
-	router.GET("/author/:id", h.getAuthorById)          //checked
-	router.GET("/authors", h.getAllAuthors)             //checked
-	router.POST("/author/create", h.createAuthor)       //checked
-	router.DELETE("/author/delete/:id", h.deleteAuthor) //checked
-	router.PUT("/author/update/:id", h.updateAuthor)    //checked
+	book := router.Group("/book", h.authMiddleware())
+	{
+		book.GET("/:id", h.getBookById)
+		book.GET("/all", h.getAllBooks)
+		book.POST("/create", h.createBook)
+		book.DELETE("/delete/:id", h.deleteBook)
+		book.PUT("/update/:id", h.updateBook)
+		//book.GET("/user/books", h.userBooks)
+	}
 
-	router.GET("/file_path/:id", h.getFilePathById)          //checked
-	router.GET("/file_paths", h.getAllFilePaths)             //checked
-	router.POST("/file_path/create", h.createFilePath)       //checked
-	router.DELETE("/file_path/delete/:id", h.deleteFilePath) //checked
-	router.PUT("/file_path/update/:id", h.updateFilePath)    //checked
+	author := router.Group("/author", h.authMiddleware())
+	{
+		author.GET("/:id", h.getAuthorById)
+		author.GET("/all", h.getAllAuthors)
+		author.POST("/create", h.createAuthor)
+		author.DELETE("/delete/:id", h.deleteAuthor)
+		author.PUT("/update/:id", h.updateAuthor)
+	}
 
-	router.PUT("/user/update", h.updateUser)
-	router.DELETE("/user/delete", h.deleteUser)
-	router.GET("/user/data", h.getUser)
+	filePath := router.Group("/file_path", h.authMiddleware())
+	{
+		filePath.GET("/:id", h.getFilePathById)
+		filePath.GET("/all", h.getAllFilePaths)
+		filePath.POST("/create", h.createFilePath)
+		filePath.DELETE("/delete/:id", h.deleteFilePath)
+		filePath.PUT("/update/:id", h.updateFilePath)
+	}
 
 	return router
 }

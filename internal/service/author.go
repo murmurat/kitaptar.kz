@@ -14,7 +14,7 @@ func (m *Manager) GetAuthorById(ctx context.Context, id string) (*entity.Author,
 	return m.Repository.GetAuthorById(ctx, id)
 }
 
-func (m *Manager) CreateAuthor(ctx context.Context, req *api.AuthorRequest) error {
+func (m *Manager) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (string, error) {
 	return m.Repository.CreateAuthor(ctx, req)
 }
 
