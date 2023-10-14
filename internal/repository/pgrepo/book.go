@@ -3,13 +3,14 @@ package pgrepo
 import (
 	"context"
 	"fmt"
+	"log"
+	"strings"
+	"time"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/google/uuid"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"log"
-	"strings"
-	"time"
 )
 
 func (p *Postgres) GetUserBooks(email string) ([]entity.Book, error) {
@@ -28,7 +29,6 @@ func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 	var books []entity.Book
 	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path, file_path_id FROM %s", bookTable)
 	rows, err := p.Pool.Query(ctx, query)
-	//rows, err := p.SQLDB.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -116,11 +116,9 @@ func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookReque
 		values = append(values, fmt.Sprintf("genre='%s'", req.Genre))
 	}
 	if req.AuthorId != uuid.Nil {
-		// check for existing author
 		values = append(values, fmt.Sprintf("author_id='%s'", req.AuthorId))
 	}
 	if req.FilePathId != uuid.Nil {
-		// check for existing author
 		values = append(values, fmt.Sprintf("file_path_id='%s'", req.FilePathId))
 	}
 	if req.ImagePath != "" {
@@ -129,8 +127,6 @@ func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookReque
 
 	setQuery := strings.Join(values, ", ")
 
-	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
-	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", bookTable, setQuery, id)
 	fmt.Println(query)
 

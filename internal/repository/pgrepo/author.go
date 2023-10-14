@@ -3,12 +3,13 @@ package pgrepo
 import (
 	"context"
 	"fmt"
-	"github.com/georgysavva/scany/pgxscan"
-	"github.com/murat96k/kitaptar.kz/api"
-	"github.com/murat96k/kitaptar.kz/internal/entity"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/georgysavva/scany/pgxscan"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 )
 
 func (p *Postgres) GetAllAuthors(ctx context.Context) ([]entity.Author, error) {
@@ -101,8 +102,6 @@ func (p *Postgres) UpdateAuthor(ctx context.Context, id string, req *api.AuthorR
 
 	setQuery := strings.Join(values, ", ")
 
-	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
-	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", authorTable, setQuery, id)
 
 	_, err := p.Pool.Exec(ctx, query)

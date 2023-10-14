@@ -3,19 +3,19 @@ package pgrepo
 import (
 	"context"
 	"fmt"
-	"github.com/georgysavva/scany/pgxscan"
-	"github.com/murat96k/kitaptar.kz/api"
-	"github.com/murat96k/kitaptar.kz/internal/entity"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/georgysavva/scany/pgxscan"
+	"github.com/murat96k/kitaptar.kz/api"
+	"github.com/murat96k/kitaptar.kz/internal/entity"
 )
 
 func (p *Postgres) GetAllFilePaths(ctx context.Context) ([]entity.FilePath, error) {
 	var filePaths []entity.FilePath
-	query := fmt.Sprintf("SELECT id, mobi,fb2, epub ,docx FROM %s", filePathsTable)
+	query := fmt.Sprintf("SELECT id, mobi, fb2, epub, docx FROM %s", filePathsTable)
 	rows, err := p.Pool.Query(ctx, query)
-	//rows, err := p.SQLDB.Query(query)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (p *Postgres) GetFilePathById(ctx context.Context, id string) (*entity.File
 
 	filePath := new(entity.FilePath)
 
-	query := fmt.Sprintf("SELECT id, mobi,fb2, epub ,docx FROM %s WHERE id='%s'", filePathsTable, strings.TrimSpace(id))
+	query := fmt.Sprintf("SELECT id, mobi,fb2, epub, docx FROM %s WHERE id='%s'", filePathsTable, strings.TrimSpace(id))
 	err := pgxscan.Get(ctx, p.Pool, filePath, query)
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (p *Postgres) CreateFilePath(ctx context.Context, req *api.FilePathRequest)
 	var filePathId string
 
 	query := fmt.Sprintf(`
-			INSERT INTO %s (mobi,fb2, epub ,docx, created_at)
+			INSERT INTO %s (mobi, fb2, epub ,docx, created_at)
 			VALUES ($1, $2, $3, $4, $5) RETURNING id
 			`, filePathsTable)
 
@@ -92,7 +92,6 @@ func (p *Postgres) UpdateFilePath(ctx context.Context, id string, req *api.FileP
 		values = append(values, fmt.Sprintf("fb2='%s'", req.Fb2))
 	}
 	if req.Epub != "" {
-		// check for existing filePath
 		values = append(values, fmt.Sprintf("epub='%s'", req.Epub))
 	}
 	if req.Docx != "" {
@@ -101,8 +100,6 @@ func (p *Postgres) UpdateFilePath(ctx context.Context, id string, req *api.FileP
 
 	setQuery := strings.Join(values, ", ")
 
-	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
-	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", filePathsTable, setQuery, id)
 	fmt.Println(query)
 
