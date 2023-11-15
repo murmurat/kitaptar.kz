@@ -242,21 +242,6 @@ func (mr *MockServiceMockRecorder) GetFilePathById(ctx, id interface{}) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilePathById", reflect.TypeOf((*MockService)(nil).GetFilePathById), ctx, id)
 }
 
-// GetUser mocks base method.
-func (m *MockService) GetUser(ctx context.Context, id string) (*entity.User, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", ctx, id)
-	ret0, _ := ret[0].(*entity.User)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetUser indicates an expected call of GetUser.
-func (mr *MockServiceMockRecorder) GetUser(ctx, id interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockService)(nil).GetUser), ctx, id)
-}
-
 // GetUserBooks mocks base method.
 func (m *MockService) GetUserBooks(email string) ([]entity.Book, error) {
 	m.ctrl.T.Helper()
@@ -270,6 +255,36 @@ func (m *MockService) GetUserBooks(email string) ([]entity.Book, error) {
 func (mr *MockServiceMockRecorder) GetUserBooks(email interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserBooks", reflect.TypeOf((*MockService)(nil).GetUserBooks), email)
+}
+
+// GetUserByEmail mocks base method.
+func (m *MockService) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByEmail", ctx, email)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByEmail indicates an expected call of GetUserByEmail.
+func (mr *MockServiceMockRecorder) GetUserByEmail(ctx, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockService)(nil).GetUserByEmail), ctx, email)
+}
+
+// GetUserById mocks base method.
+func (m *MockService) GetUserById(ctx context.Context, id string) (*entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserById", ctx, id)
+	ret0, _ := ret[0].(*entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserById indicates an expected call of GetUserById.
+func (mr *MockServiceMockRecorder) GetUserById(ctx, id interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserById", reflect.TypeOf((*MockService)(nil).GetUserById), ctx, id)
 }
 
 // Login mocks base method.

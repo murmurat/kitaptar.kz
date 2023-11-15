@@ -6,33 +6,35 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"log"
 	"strings"
 	"time"
 )
 
 func (p *Postgres) GetAllFilePaths(ctx context.Context) ([]entity.FilePath, error) {
+
 	var filePaths []entity.FilePath
 	query := fmt.Sprintf("SELECT id, mobi,fb2, epub ,docx FROM %s", filePathsTable)
+
 	rows, err := p.Pool.Query(ctx, query)
-	//rows, err := p.SQLDB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
 	for rows.Next() {
 		filePath := entity.FilePath{}
 		err = rows.Scan(&filePath.Id, &filePath.Mobi, &filePath.Fb2, &filePath.Epub, &filePath.Docx)
 		filePaths = append(filePaths, filePath)
 		if err != nil {
-			log.Printf("Scan filePath values error %s", err.Error())
 			return nil, err
 		}
 	}
+
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
+
 	return filePaths, nil
 }
 
@@ -40,8 +42,8 @@ func (p *Postgres) GetFilePathById(ctx context.Context, id string) (*entity.File
 
 	filePath := new(entity.FilePath)
 
-	query := fmt.Sprintf("SELECT id, mobi,fb2, epub ,docx FROM %s WHERE id='%s'", filePathsTable, strings.TrimSpace(id))
-	err := pgxscan.Get(ctx, p.Pool, filePath, query)
+	query := fmt.Sprintf("SELECT id, mobi, fb2, epub, docx FROM %s WHERE id=$1", filePathsTable)
+	err := pgxscan.Get(ctx, p.Pool, filePath, query, strings.TrimSpace(id))
 	if err != nil {
 		return nil, err
 	}
@@ -71,10 +73,11 @@ func (p *Postgres) CreateFilePath(ctx context.Context, req *api.FilePathRequest)
 
 	return filePathId, tx.Commit(ctx)
 }
-func (p *Postgres) DeleteFilePath(ctx context.Context, id string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id='%s'", filePathsTable, id)
 
-	_, err := p.Pool.Exec(ctx, query)
+func (p *Postgres) DeleteFilePath(ctx context.Context, id string) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", filePathsTable)
+
+	_, err := p.Pool.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}
@@ -83,32 +86,41 @@ func (p *Postgres) DeleteFilePath(ctx context.Context, id string) error {
 }
 
 func (p *Postgres) UpdateFilePath(ctx context.Context, id string, req *api.FilePathRequest) error {
+
 	values := make([]string, 0)
+	paramCount := 2
+	params := make([]interface{}, 0)
 
 	if req.Mobi != "" {
-		values = append(values, fmt.Sprintf("mobi='%s'", req.Mobi))
+		values = append(values, fmt.Sprintf("mobi=$%d", paramCount))
+		params = append(params, req.Mobi)
+		paramCount++
 	}
 	if req.Fb2 != "" {
-		values = append(values, fmt.Sprintf("fb2='%s'", req.Fb2))
+		values = append(values, fmt.Sprintf("fb2=$%d", paramCount))
+		params = append(params, req.Fb2)
+		paramCount++
 	}
 	if req.Epub != "" {
-		// check for existing filePath
-		values = append(values, fmt.Sprintf("epub='%s'", req.Epub))
+		values = append(values, fmt.Sprintf("epub=$%d", paramCount))
+		params = append(params, req.Epub)
+		paramCount++
 	}
 	if req.Docx != "" {
-		values = append(values, fmt.Sprintf("docx='%s'", req.Docx))
+		values = append(values, fmt.Sprintf("docx=$%d", paramCount))
+		params = append(params, req.Docx)
+		paramCount++
 	}
 
 	setQuery := strings.Join(values, ", ")
+	setQuery = fmt.Sprintf("UPDATE %s SET ", filePathsTable) + setQuery + " WHERE id=$1"
 
-	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
-	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
-	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", filePathsTable, setQuery, id)
-	fmt.Println(query)
+	params = append([]interface{}{id}, params...)
 
-	_, err := p.Pool.Exec(ctx, query)
+	_, err := p.Pool.Exec(ctx, setQuery, params...)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

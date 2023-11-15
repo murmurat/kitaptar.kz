@@ -38,7 +38,6 @@ func New(opts ...Option) (*Postgres, error) {
 		User:   url.UserPassword(p.username, p.password),
 		Host:   fmt.Sprintf("%s:%s", p.host, p.port),
 		Path:   p.dbName,
-		//	RawQuery: q.Encode(),
 	}
 
 	poolConfig, err := pgxpool.ParseConfig(u.String())

@@ -6,22 +6,10 @@ import (
 	"net/http"
 )
 
-// not ready
-//func (h *Handler) userBooks(ctx *gin.Context) {
-//	email, ok := ctx.MustGet(authUserID).(string)
-//	if !ok {
-//		log.Printf("can't get user email on userBooks")
-//		ctx.Status(http.StatusBadRequest)
-//		return
-//	}
-//	_, err := h.srvs.GetUserBooks(email)
-//	if err != nil {
-//		log.Printf("get User books error %s", err.Error())
-//	}
-//	// logic
-//	//fmt.Println("Email of book owner user: ", email)
-//	//ctx.Status(http.StatusOK)
-//}
+// Realise userBooks() func
+// func (h *Handler) userBooks(ctx *gin.Context) {
+//
+// }
 
 func (h *Handler) getAllBooks(ctx *gin.Context) {
 
@@ -53,6 +41,7 @@ func (h *Handler) getBookById(ctx *gin.Context) {
 }
 
 func (h *Handler) createBook(ctx *gin.Context) {
+
 	var req api.BookRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -70,6 +59,7 @@ func (h *Handler) createBook(ctx *gin.Context) {
 }
 
 func (h *Handler) updateBook(ctx *gin.Context) {
+
 	var req api.BookRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -80,6 +70,11 @@ func (h *Handler) updateBook(ctx *gin.Context) {
 	bookId := ctx.Param("id")
 	if bookId == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "book id is empty"})
+		return
+	}
+
+	if req == (api.BookRequest{}) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "Update data not provided"})
 		return
 	}
 

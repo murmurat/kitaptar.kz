@@ -155,8 +155,8 @@ func TestHandler_updateUser(t *testing.T) {
 			mockBehavior: func(s *mock_service.MockService, req api.UpdateUserRequest) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
 			},
-			expectedStatusCode:   500,
-			expectedResponseBody: `{"message":"something went wrong"}`,
+			expectedStatusCode:   400,
+			expectedResponseBody: `{"message":"Update user data not provided"}`,
 		},
 	}
 	for _, testCase := range testTable {
@@ -199,7 +199,7 @@ func TestHandler_getUser(t *testing.T) {
 			inputID: "6f50ba79-1820-40c0-9c23-800400575c65",
 			mockBehavior: func(s *mock_service.MockService, userID string) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().GetUser(gomock.Any(), userID).Return(&entity.User{
+				s.EXPECT().GetUserById(gomock.Any(), userID).Return(&entity.User{
 					Id:        uuid.MustParse("6f50ba79-1820-40c0-9c23-800400575c65"),
 					FirstName: "test_user",
 					LastName:  "test_user",
@@ -224,7 +224,7 @@ func TestHandler_getUser(t *testing.T) {
 			inputID: "6f50ba79-1820-40c0-9c23-800400575c65",
 			mockBehavior: func(s *mock_service.MockService, userID string) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().GetUser(gomock.Any(), userID).Return(nil, errors.New("something went wrong"))
+				s.EXPECT().GetUserById(gomock.Any(), userID).Return(nil, errors.New("something went wrong"))
 
 			},
 			expectedStatusCode:   500,

@@ -15,3 +15,8 @@ db:
 
 token:
   time_to_live: "15m"
+
+
+redis:
+  address: 'localhost:6379'
+  expiration_time: '24h'
