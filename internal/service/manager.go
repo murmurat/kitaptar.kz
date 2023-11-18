@@ -11,9 +11,9 @@ type Manager struct {
 	Repository repository.Repository
 	Config     *config.Config
 	Token      *jwttoken.JWTToken
-	Cache      cache.Cache
+	Cache      cache.AppCache
 }
 
-func New(repository repository.Repository, config *config.Config, token *jwttoken.JWTToken, cache cache.Cache) *Manager {
+func New(repository repository.Repository, config *config.Config, token *jwttoken.JWTToken, cache cache.AppCache) *Manager {
 	return &Manager{Repository: repository, Config: config, Token: token, Cache: cache}
 }

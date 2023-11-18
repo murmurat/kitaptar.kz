@@ -13,7 +13,7 @@ import (
 func (p *Postgres) GetAllFilePaths(ctx context.Context) ([]entity.FilePath, error) {
 
 	var filePaths []entity.FilePath
-	query := fmt.Sprintf("SELECT id, mobi,fb2, epub ,docx FROM %s", filePathsTable)
+	query := fmt.Sprintf("SELECT id, mobi, fb2, epub ,docx FROM %s", filePathsTable)
 
 	rows, err := p.Pool.Query(ctx, query)
 	if err != nil {
@@ -61,7 +61,7 @@ func (p *Postgres) CreateFilePath(ctx context.Context, req *api.FilePathRequest)
 	var filePathId string
 
 	query := fmt.Sprintf(`
-			INSERT INTO %s (mobi,fb2, epub ,docx, created_at)
+			INSERT INTO %s (mobi, fb2, epub, docx, created_at)
 			VALUES ($1, $2, $3, $4, $5) RETURNING id
 			`, filePathsTable)
 

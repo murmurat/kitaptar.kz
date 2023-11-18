@@ -24,7 +24,7 @@ func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 
 	var books []entity.Book
 
-	query := fmt.Sprintf("SELECT id, name,genre, annotation ,author_id, image_path, file_path_id FROM %s", bookTable)
+	query := fmt.Sprintf("SELECT id, name, genre, annotation, author_id, image_path, file_path_id FROM %s", bookTable)
 
 	rows, err := p.Pool.Query(ctx, query)
 	if err != nil {
@@ -52,7 +52,7 @@ func (p *Postgres) GetBookById(ctx context.Context, id string) (*entity.Book, er
 
 	book := new(entity.Book)
 
-	query := fmt.Sprintf("SELECT id, name,genre, annotation, author_id, image_path, file_path_id FROM %s WHERE id=$1", bookTable)
+	query := fmt.Sprintf("SELECT id, name, genre, annotation, author_id, image_path, file_path_id FROM %s WHERE id=$1", bookTable)
 
 	err := pgxscan.Get(ctx, p.Pool, book, query, strings.TrimSpace(id))
 	if err != nil {

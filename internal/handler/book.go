@@ -6,9 +6,10 @@ import (
 	"net/http"
 )
 
-// Realise userBooks() func
 // func (h *Handler) userBooks(ctx *gin.Context) {
-//
+
+// TODO Implement all books which liked by user(Saved books)
+
 // }
 
 func (h *Handler) getAllBooks(ctx *gin.Context) {

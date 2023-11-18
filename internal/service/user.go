@@ -81,17 +81,24 @@ func (m *Manager) UpdateUser(ctx context.Context, id string, req *api.UpdateUser
 		user.Password = req.Password
 	}
 
-	err = m.Cache.UserCache.Set(ctx, id, user)
+	err = m.Cache.UserCache.DeleteUser(ctx, user.Id.String())
 	if err != nil {
 		return err
 	}
 
-	return m.Repository.UpdateUser(ctx, id, req)
+	err = m.Repository.UpdateUser(ctx, id, req)
+	if err != nil {
+		return err
+	}
+
+	_ = m.Cache.UserCache.SetUser(ctx, user)
+
+	return nil
 }
 
 func (m *Manager) GetUserById(ctx context.Context, id string) (*entity.User, error) {
 
-	user, err := m.Cache.UserCache.Get(ctx, id)
+	user, err := m.Cache.UserCache.GetUser(ctx, id)
 	if err != nil && err != redis.Nil {
 		return nil, err
 	}
@@ -104,7 +111,7 @@ func (m *Manager) GetUserById(ctx context.Context, id string) (*entity.User, err
 		return nil, err
 	}
 
-	err = m.Cache.UserCache.Set(ctx, id, user)
+	err = m.Cache.UserCache.SetUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +126,7 @@ func (m *Manager) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 		return nil, err
 	}
 
-	err = m.Cache.UserCache.Set(ctx, user.Id.String(), user)
+	err = m.Cache.UserCache.SetUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +136,7 @@ func (m *Manager) GetUserByEmail(ctx context.Context, email string) (*entity.Use
 
 func (m *Manager) DeleteUser(ctx context.Context, id string) error {
 
-	err := m.Cache.UserCache.Delete(ctx, id)
+	err := m.Cache.UserCache.DeleteUser(ctx, id)
 	if err != nil {
 		return err
 	}

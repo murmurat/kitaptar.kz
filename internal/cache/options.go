@@ -1,27 +1,27 @@
 package cache
 
-type Option func(cache *Cache)
+type Option func(cache *AppCache)
 
-func WithUserCache(user User) Option {
-	return func(cache *Cache) {
+func WithUserCache(user UserCacher) Option {
+	return func(cache *AppCache) {
 		cache.UserCache = user
 	}
 }
 
-func WithAuthorCache(author Author) Option {
-	return func(cache *Cache) {
+func WithAuthorCache(author AuthorCacher) Option {
+	return func(cache *AppCache) {
 		cache.AuthorCache = author
 	}
 }
 
-func WithBookCache(book Book) Option {
-	return func(cache *Cache) {
+func WithBookCache(book BookCacher) Option {
+	return func(cache *AppCache) {
 		cache.BookCache = book
 	}
 }
 
-func WithFilePathCache(filePath FilePath) Option {
-	return func(cache *Cache) {
+func WithFilePathCache(filePath FilePathCacher) Option {
+	return func(cache *AppCache) {
 		cache.FilePathCache = filePath
 	}
 }

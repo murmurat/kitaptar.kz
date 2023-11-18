@@ -19,7 +19,7 @@ func (m *Manager) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 
 func (m *Manager) GetBookById(ctx context.Context, id string) (*entity.Book, error) {
 
-	book, err := m.Cache.BookCache.Get(ctx, id)
+	book, err := m.Cache.BookCache.GetBook(ctx, id)
 	if err != nil && err != redis.Nil {
 		return nil, err
 	}
@@ -32,7 +32,7 @@ func (m *Manager) GetBookById(ctx context.Context, id string) (*entity.Book, err
 		return nil, err
 	}
 
-	err = m.Cache.BookCache.Set(ctx, id, book)
+	err = m.Cache.BookCache.SetBook(ctx, book)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (m *Manager) CreateBook(ctx context.Context, req *api.BookRequest) (string,
 
 func (m *Manager) DeleteBook(ctx context.Context, id string) error {
 
-	err := m.Cache.BookCache.Delete(ctx, id)
+	err := m.Cache.BookCache.DeleteBook(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -80,10 +80,17 @@ func (m *Manager) UpdateBook(ctx context.Context, id string, req *api.BookReques
 		book.AuthorId = req.AuthorId
 	}
 
-	err = m.Cache.BookCache.Set(ctx, id, book)
+	err = m.Cache.BookCache.DeleteBook(ctx, book.Id.String())
 	if err != nil {
 		return err
 	}
 
-	return m.Repository.UpdateBook(ctx, id, req)
+	err = m.Repository.UpdateBook(ctx, id, req)
+	if err != nil {
+		return err
+	}
+
+	_ = m.Cache.BookCache.SetBook(ctx, book)
+
+	return nil
 }

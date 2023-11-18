@@ -13,7 +13,7 @@ func (m *Manager) GetAllAuthors(ctx context.Context) ([]entity.Author, error) {
 
 func (m *Manager) GetAuthorById(ctx context.Context, id string) (*entity.Author, error) {
 
-	author, err := m.Cache.AuthorCache.Get(ctx, id)
+	author, err := m.Cache.AuthorCache.GetAuthor(ctx, id)
 	if err != nil && err != redis.Nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (m *Manager) GetAuthorById(ctx context.Context, id string) (*entity.Author,
 		return nil, err
 	}
 
-	err = m.Cache.AuthorCache.Set(ctx, id, author)
+	err = m.Cache.AuthorCache.SetAuthor(ctx, author)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (m *Manager) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (str
 
 func (m *Manager) DeleteAuthor(ctx context.Context, id string) error {
 
-	err := m.Cache.AuthorCache.Delete(ctx, id)
+	err := m.Cache.AuthorCache.DeleteAuthor(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -68,10 +68,17 @@ func (m *Manager) UpdateAuthor(ctx context.Context, id string, req *api.AuthorRe
 		author.ImagePath = req.ImagePath
 	}
 
-	err = m.Cache.AuthorCache.Set(ctx, id, author)
+	err = m.Cache.AuthorCache.DeleteAuthor(ctx, id)
 	if err != nil {
 		return err
 	}
 
-	return m.Repository.UpdateAuthor(ctx, id, req)
+	err = m.Repository.UpdateAuthor(ctx, id, req)
+	if err != nil {
+		return err
+	}
+
+	_ = m.Cache.AuthorCache.SetAuthor(ctx, author)
+
+	return nil
 }

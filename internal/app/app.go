@@ -38,12 +38,9 @@ func Run(cfg *config.Config) error {
 		log.Fatal("[ERROR] connect to redis client error")
 	}
 
-	userCache := cache.NewUserCache(redisClient, cfg.Redis.ExpirationTime)
-	authorCache := cache.NewAuthorCache(redisClient, cfg.Redis.ExpirationTime)
-	bookCache := cache.NewBookCache(redisClient, cfg.Redis.ExpirationTime)
-	filePathCache := cache.NewFilePathCache(redisClient, cfg.Redis.ExpirationTime)
+	appCache := cache.NewCache(redisClient, cfg.Redis.ExpirationTime)
 
-	cache, err := cache.NewCache(cache.WithUserCache(userCache), cache.WithAuthorCache(authorCache), cache.WithBookCache(bookCache), cache.WithFilePathCache(filePathCache))
+	cache, err := cache.NewAppCache(cache.WithUserCache(appCache), cache.WithAuthorCache(appCache), cache.WithBookCache(appCache), cache.WithFilePathCache(appCache))
 	if err != nil {
 		log.Fatalf("[ERROR] create cache error: %s", err.Error())
 	}

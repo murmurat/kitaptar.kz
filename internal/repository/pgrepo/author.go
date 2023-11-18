@@ -14,7 +14,7 @@ func (p *Postgres) GetAllAuthors(ctx context.Context) ([]entity.Author, error) {
 
 	var authors []entity.Author
 
-	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path ,about_author FROM %s", authorTable)
+	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path, about_author FROM %s", authorTable)
 
 	rows, err := p.Pool.Query(ctx, query)
 	if err != nil {
@@ -43,7 +43,7 @@ func (p *Postgres) GetAuthorById(ctx context.Context, id string) (*entity.Author
 
 	author := new(entity.Author)
 
-	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path ,about_author FROM %s WHERE id=$1", authorTable)
+	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path, about_author FROM %s WHERE id=$1", authorTable)
 
 	err := pgxscan.Get(ctx, p.Pool, author, query, id)
 	if err != nil {
@@ -62,7 +62,7 @@ func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (st
 
 	var authorId string
 	query := fmt.Sprintf(`
-			INSERT INTO %s (firstname, lastname, image_path ,about_author, created_at)
+			INSERT INTO %s (firstname, lastname, image_path, about_author, created_at)
 			VALUES ($1, $2, $3, $4, $5) RETURNING id
 			`, authorTable)
 

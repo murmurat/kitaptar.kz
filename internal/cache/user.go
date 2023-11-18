@@ -4,31 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"github.com/redis/go-redis/v9"
-	"time"
 )
 
-type User interface {
-	Get(ctx context.Context, key string) (*entity.User, error)
-	Set(ctx context.Context, key string, value *entity.User) error
-	Delete(ctx context.Context, key string) error
+type UserCacher interface {
+	GetUser(ctx context.Context, key string) (*entity.User, error)
+	SetUser(ctx context.Context, value *entity.User) error
+	DeleteUser(ctx context.Context, key string) error
 }
 
-type UserCache struct {
-	Expiration time.Duration
-	redisCli   *redis.Client
-}
+func (c *Cache) GetUser(ctx context.Context, key string) (*entity.User, error) {
 
-func NewUserCache(redisCli *redis.Client, expiration time.Duration) User {
-	return &UserCache{
-		redisCli:   redisCli,
-		Expiration: expiration,
-	}
-}
-
-func (u *UserCache) Get(ctx context.Context, key string) (*entity.User, error) {
-
-	value, err := u.redisCli.Get(ctx, key).Result()
+	value, err := c.redisCli.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -47,16 +33,16 @@ func (u *UserCache) Get(ctx context.Context, key string) (*entity.User, error) {
 	return user, nil
 }
 
-func (u *UserCache) Set(ctx context.Context, key string, value *entity.User) error {
+func (c *Cache) SetUser(ctx context.Context, value *entity.User) error {
 
 	jsonValue, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	return u.redisCli.Set(ctx, key, string(jsonValue), u.Expiration).Err()
+	return c.redisCli.Set(ctx, value.Id.String(), string(jsonValue), c.Expiration).Err()
 }
 
-func (u *UserCache) Delete(ctx context.Context, key string) error {
-	return u.redisCli.Del(ctx, key).Err()
+func (c *Cache) DeleteUser(ctx context.Context, key string) error {
+	return c.redisCli.Del(ctx, key).Err()
 }

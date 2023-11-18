@@ -4,31 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"github.com/redis/go-redis/v9"
-	"time"
 )
 
-type Author interface {
-	Get(ctx context.Context, key string) (*entity.Author, error)
-	Set(ctx context.Context, key string, value *entity.Author) error
-	Delete(ctx context.Context, key string) error
+type AuthorCacher interface {
+	GetAuthor(ctx context.Context, key string) (*entity.Author, error)
+	SetAuthor(ctx context.Context, value *entity.Author) error
+	DeleteAuthor(ctx context.Context, key string) error
 }
 
-type AuthorCache struct {
-	Expiration time.Duration
-	redisCli   *redis.Client
-}
+func (c *Cache) GetAuthor(ctx context.Context, key string) (*entity.Author, error) {
 
-func NewAuthorCache(redisCli *redis.Client, expiration time.Duration) Author {
-	return &AuthorCache{
-		redisCli:   redisCli,
-		Expiration: expiration,
-	}
-}
-
-func (a *AuthorCache) Get(ctx context.Context, key string) (*entity.Author, error) {
-
-	value, err := a.redisCli.Get(ctx, key).Result()
+	value, err := c.redisCli.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -47,16 +33,16 @@ func (a *AuthorCache) Get(ctx context.Context, key string) (*entity.Author, erro
 	return author, nil
 }
 
-func (a *AuthorCache) Set(ctx context.Context, key string, value *entity.Author) error {
+func (c *Cache) SetAuthor(ctx context.Context, value *entity.Author) error {
 
 	jsonValue, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	return a.redisCli.Set(ctx, key, string(jsonValue), a.Expiration).Err()
+	return c.redisCli.Set(ctx, value.Id.String(), string(jsonValue), c.Expiration).Err()
 }
 
-func (a *AuthorCache) Delete(ctx context.Context, key string) error {
-	return a.redisCli.Del(ctx, key).Err()
+func (c *Cache) DeleteAuthor(ctx context.Context, key string) error {
+	return c.redisCli.Del(ctx, key).Err()
 }

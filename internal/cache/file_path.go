@@ -4,31 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"github.com/redis/go-redis/v9"
-	"time"
 )
 
-type FilePath interface {
-	Get(ctx context.Context, key string) (*entity.FilePath, error)
-	Set(ctx context.Context, key string, value *entity.FilePath) error
-	Delete(ctx context.Context, key string) error
+type FilePathCacher interface {
+	GetFilePath(ctx context.Context, key string) (*entity.FilePath, error)
+	SetFilePath(ctx context.Context, value *entity.FilePath) error
+	DeleteFilePath(ctx context.Context, key string) error
 }
 
-type FilePathCache struct {
-	Expiration time.Duration
-	redisCli   *redis.Client
-}
+func (c *Cache) GetFilePath(ctx context.Context, key string) (*entity.FilePath, error) {
 
-func NewFilePathCache(redisCli *redis.Client, expiration time.Duration) FilePath {
-	return &FilePathCache{
-		redisCli:   redisCli,
-		Expiration: expiration,
-	}
-}
-
-func (f *FilePathCache) Get(ctx context.Context, key string) (*entity.FilePath, error) {
-
-	value, err := f.redisCli.Get(ctx, key).Result()
+	value, err := c.redisCli.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
 	}
@@ -47,16 +33,16 @@ func (f *FilePathCache) Get(ctx context.Context, key string) (*entity.FilePath, 
 	return filePath, nil
 }
 
-func (f *FilePathCache) Set(ctx context.Context, key string, value *entity.FilePath) error {
+func (c *Cache) SetFilePath(ctx context.Context, value *entity.FilePath) error {
 
 	jsonValue, err := json.Marshal(value)
 	if err != nil {
 		return err
 	}
 
-	return f.redisCli.Set(ctx, key, string(jsonValue), f.Expiration).Err()
+	return c.redisCli.Set(ctx, value.Id.String(), string(jsonValue), c.Expiration).Err()
 }
 
-func (f *FilePathCache) Delete(ctx context.Context, key string) error {
-	return f.redisCli.Del(ctx, key).Err()
+func (c *Cache) DeleteFilePath(ctx context.Context, key string) error {
+	return c.redisCli.Del(ctx, key).Err()
 }
