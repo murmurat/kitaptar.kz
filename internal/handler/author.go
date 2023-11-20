@@ -36,6 +36,7 @@ func (h *Handler) getAuthorById(ctx *gin.Context) {
 }
 
 func (h *Handler) createAuthor(ctx *gin.Context) {
+
 	var req api.AuthorRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -53,6 +54,7 @@ func (h *Handler) createAuthor(ctx *gin.Context) {
 }
 
 func (h *Handler) updateAuthor(ctx *gin.Context) {
+
 	var req api.AuthorRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
@@ -63,6 +65,10 @@ func (h *Handler) updateAuthor(ctx *gin.Context) {
 	authorId := ctx.Param("id")
 	if authorId == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "author id is empty"})
+		return
+	}
+	if req == (api.AuthorRequest{}) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "Update data not provided"})
 		return
 	}
 

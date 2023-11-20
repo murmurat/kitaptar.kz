@@ -6,33 +6,36 @@ import (
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/entity"
-	"log"
 	"strings"
 	"time"
 )
 
 func (p *Postgres) GetAllAuthors(ctx context.Context) ([]entity.Author, error) {
+
 	var authors []entity.Author
-	query := fmt.Sprintf("SELECT id, firstname,lastname, image_path ,about_author FROM %s", authorTable)
+
+	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path, about_author FROM %s", authorTable)
+
 	rows, err := p.Pool.Query(ctx, query)
-	//rows, err := p.SQLDB.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
 	for rows.Next() {
 		author := entity.Author{}
 		err = rows.Scan(&author.Id, &author.Firstname, &author.Lastname, &author.ImagePath, &author.AboutAuthor)
 		authors = append(authors, author)
 		if err != nil {
-			log.Printf("Scan author values error %s", err.Error())
 			return nil, err
 		}
 	}
+
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
+
 	return authors, nil
 }
 
@@ -40,8 +43,9 @@ func (p *Postgres) GetAuthorById(ctx context.Context, id string) (*entity.Author
 
 	author := new(entity.Author)
 
-	query := fmt.Sprintf("SELECT id, firstname,lastname, image_path ,about_author FROM %s WHERE id='%s'", authorTable, strings.TrimSpace(id))
-	err := pgxscan.Get(ctx, p.Pool, author, query)
+	query := fmt.Sprintf("SELECT id, firstname, lastname, image_path, about_author FROM %s WHERE id=$1", authorTable)
+
+	err := pgxscan.Get(ctx, p.Pool, author, query, id)
 	if err != nil {
 		return nil, err
 	}
@@ -50,15 +54,15 @@ func (p *Postgres) GetAuthorById(ctx context.Context, id string) (*entity.Author
 }
 
 func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (string, error) {
+
 	tx, err := p.Pool.Begin(ctx)
 	if err != nil {
 		return "", err
 	}
 
 	var authorId string
-	// Need to flexible code (Like Update queries)
 	query := fmt.Sprintf(`
-			INSERT INTO %s (firstname, lastname, image_path ,about_author, created_at)
+			INSERT INTO %s (firstname, lastname, image_path, about_author, created_at)
 			VALUES ($1, $2, $3, $4, $5) RETURNING id
 			`, authorTable)
 
@@ -72,9 +76,10 @@ func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (st
 }
 
 func (p *Postgres) DeleteAuthor(ctx context.Context, id string) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE id='%s'", authorTable, id)
 
-	_, err := p.Pool.Exec(ctx, query)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", authorTable)
+
+	_, err := p.Pool.Exec(ctx, query, id)
 	if err != nil {
 		return err
 	}
@@ -83,31 +88,40 @@ func (p *Postgres) DeleteAuthor(ctx context.Context, id string) error {
 }
 
 func (p *Postgres) UpdateAuthor(ctx context.Context, id string, req *api.AuthorRequest) error {
+
 	values := make([]string, 0)
+	paramCount := 2
+	params := make([]interface{}, 0)
 
 	if req.Firstname != "" {
-		values = append(values, fmt.Sprintf("firstname='%s'", req.Firstname))
+		values = append(values, fmt.Sprintf("firstname=$%d", paramCount))
+		params = append(params, req.Firstname)
+		paramCount++
 	}
 	if req.Lastname != "" {
-		values = append(values, fmt.Sprintf("lastname='%s'", req.Lastname))
+		values = append(values, fmt.Sprintf("lastname=$%d", paramCount))
+		params = append(params, req.Lastname)
+		paramCount++
 	}
 	if req.AboutAuthor != "" {
-		// check for existing author
-		values = append(values, fmt.Sprintf("about_author='%s'", req.AboutAuthor))
+		values = append(values, fmt.Sprintf("about_author=$%d", paramCount))
+		params = append(params, req.AboutAuthor)
+		paramCount++
 	}
 	if req.ImagePath != "" {
-		values = append(values, fmt.Sprintf("image_path='%s'", req.ImagePath))
+		values = append(values, fmt.Sprintf("image_path=$%d", paramCount))
+		params = append(params, req.ImagePath)
 	}
 
 	setQuery := strings.Join(values, ", ")
+	setQuery = fmt.Sprintf("UPDATE %s SET ", authorTable) + setQuery + " WHERE id=$1"
 
-	//fmt.Printf("Error dont have before query %s, query: '%s'", user.Password, setQuery)
-	//query := fmt.Sprintf("UPDATE %s SET %s WHERE email = %s;", usersTable, setQuery, email)
-	query := fmt.Sprintf("UPDATE %s SET %s WHERE id = '%s';", authorTable, setQuery, id)
+	params = append([]interface{}{id}, params...)
 
-	_, err := p.Pool.Exec(ctx, query)
+	_, err := p.Pool.Exec(ctx, setQuery, params...)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }

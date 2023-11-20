@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-const authUserID = "auth_user_id"
+const (
+	authUserID    = "auth_user_id"
+	authUserEmail = "auth_user_email"
+)
 
 func (h *Handler) authMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

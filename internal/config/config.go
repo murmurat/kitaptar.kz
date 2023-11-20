@@ -7,6 +7,7 @@ type Config struct {
 	HTTP  ServerConfig `yaml:"http"`
 	DB    DBConfig     `yaml:"db"`
 	Token TokenConfig  `yaml:"token"`
+	Redis RedisConfig  `yaml:"redis"`
 }
 
 type TokenConfig struct {
@@ -28,6 +29,11 @@ type DBConfig struct {
 	//MigrationPath    string `yaml:"migration_path"`
 	//MigrationVersion uint   `yaml:"migration_version"`
 	Password string `env:"DB_PASSWORD" env-default:"postgres"`
+}
+
+type RedisConfig struct {
+	Address        string        `yaml:"address"`
+	ExpirationTime time.Duration `yaml:"expiration_time"`
 }
 
 func InitConfig(path string) (*Config, error) {

@@ -77,6 +77,11 @@ func (h *Handler) updateFilePath(ctx *gin.Context) {
 		return
 	}
 
+	if req == (api.FilePathRequest{}) {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "Update data not provided"})
+		return
+	}
+
 	err := h.srvs.UpdateFilePath(ctx, filePathId, &req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})

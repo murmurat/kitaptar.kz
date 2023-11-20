@@ -20,16 +20,15 @@ import (
 // @in header
 // @name Authorization
 func main() {
+
 	cfg, err := config.InitConfig("config.yaml")
 
 	if err != nil {
-		log.Printf("config init err %s", err)
-		//panic(err)
+		log.Fatalf("config init err %s", err)
 	}
 
 	err = app.Run(cfg)
 	if err != nil {
-		log.Printf("config init err %s", err)
-		//panic(err)
+		log.Fatalf("app run err %s", err)
 	}
 }

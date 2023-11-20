@@ -2,20 +2,18 @@ package app
 
 import (
 	"github.com/joho/godotenv"
+	"github.com/murat96k/kitaptar.kz/internal/cache"
 	"github.com/murat96k/kitaptar.kz/internal/config"
 	"github.com/murat96k/kitaptar.kz/internal/handler"
 	"github.com/murat96k/kitaptar.kz/internal/repository/pgrepo"
 	"github.com/murat96k/kitaptar.kz/internal/service"
+	pkg_redis "github.com/murat96k/kitaptar.kz/pkg/cache"
 	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
 	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
 	"log"
 	"os"
 	"os/signal"
 )
-
-//func Init(config config.Config) {
-//	server := httpserver.New()
-//}
 
 func Run(cfg *config.Config) error {
 	err := godotenv.Load(".env")
@@ -35,7 +33,19 @@ func Run(cfg *config.Config) error {
 
 	token := jwttoken.New(cfg.Token.SecretKey)
 
-	service := service.New(db, cfg, token)
+	redisClient, err := pkg_redis.NewRedisClient(cfg)
+	if err != nil {
+		log.Fatal("[ERROR] connect to redis client error")
+	}
+
+	appCache := cache.NewCache(redisClient, cfg.Redis.ExpirationTime)
+
+	cache, err := cache.NewAppCache(cache.WithUserCache(appCache), cache.WithAuthorCache(appCache), cache.WithBookCache(appCache), cache.WithFilePathCache(appCache))
+	if err != nil {
+		log.Fatalf("[ERROR] create cache error: %s", err.Error())
+	}
+
+	service := service.New(db, cfg, token, *cache)
 	handler := handler.New(service)
 
 	server := httpserver.New(handler.InitRouter(),
