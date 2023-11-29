@@ -8,6 +8,7 @@ type Config struct {
 	Database   DBConfig    `mapstructure:"Database"`
 	Auth       Auth        `mapstructure:"Auth"`
 	Redis      RedisConfig `mapstructure:"Redis"`
+	SMTP       SMTPConfig  `mapstructure:"SMTP"`
 }
 
 type HttpServer struct {
@@ -38,5 +39,13 @@ type DBConfig struct {
 
 type RedisConfig struct {
 	Address        string        `mapstructure:"address"`
+	DB             int           `mapstructure:"db"`
 	ExpirationTime time.Duration `mapstructure:"TimeToLive"`
+}
+
+type SMTPConfig struct {
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }

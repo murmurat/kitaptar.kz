@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/murat96k/kitaptar.kz/api"
-	"net/http"
 )
 
 // func (h *Handler) userBooks(ctx *gin.Context) {
@@ -116,4 +118,70 @@ func (h *Handler) deleteBook(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, api.Response{Message: "Book deleted"})
+}
+
+func (h *Handler) addToFavorites(ctx *gin.Context) {
+	bookId := ctx.Param("id")
+	if bookId == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "book id is empty"})
+		return
+	}
+
+	userId, err := getUserId(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: fmt.Sprintf("user id getting error: %v", err)})
+		return
+	}
+
+	favoriteId, err := h.srvs.AddToFavorites(ctx, userId, bookId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, api.Response{Message: fmt.Sprintf("Successfully added to favorited, id: %s", favoriteId)})
+}
+
+func (h *Handler) getFromFavorites(ctx *gin.Context) {
+	bookId := ctx.Param("id")
+	if bookId == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "book id is empty"})
+		return
+	}
+
+	userId, err := getUserId(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: fmt.Sprintf("user id getting error: %v", err)})
+		return
+	}
+
+	favorite, err := h.srvs.GetFromFavorites(ctx, userId, bookId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, favorite)
+}
+
+func (h *Handler) deleteFromFavorites(ctx *gin.Context) {
+	bookId := ctx.Param("id")
+	if bookId == "" {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "book id is empty"})
+		return
+	}
+
+	userId, err := getUserId(ctx)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: fmt.Sprintf("user id getting error: %v", err)})
+		return
+	}
+
+	err = h.srvs.DeleteFromFavorites(ctx, userId, bookId)
+	if err != nil {
+		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, api.Response{Message: "Book deleted from favorites"})
 }

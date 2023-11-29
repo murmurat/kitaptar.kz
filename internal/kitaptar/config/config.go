@@ -5,9 +5,10 @@ import "time"
 type Config struct {
 	HttpServer HttpServer `mapstructure:"HttpServer"`
 	//	GrpcServer GrpcServer  `mapstructure:"GrpcServer"`
-	Database DBConfig    `mapstructure:"Database"`
-	Auth     Auth        `mapstructure:"Auth"`
-	Redis    RedisConfig `mapstructure:"Redis"`
+	Database    DBConfig    `mapstructure:"Database"`
+	Auth        Auth        `mapstructure:"Auth"`
+	Redis       RedisConfig `mapstructure:"Redis"`
+	DebugServer DebugServer `mapstructure:"DebugServer"`
 }
 
 type Auth struct {
@@ -34,5 +35,11 @@ type DBConfig struct {
 
 type RedisConfig struct {
 	Address        string        `mapstructure:"address"`
+	DB             int           `mapstructure:"db"`
 	ExpirationTime time.Duration `mapstructure:"TimeToLive"`
+}
+
+type DebugServer struct {
+	Port string `mapstructure:"port"`
+	Host string `mapstructure:"host"`
 }

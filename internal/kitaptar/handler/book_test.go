@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/entity"
 	mock_service "github.com/murat96k/kitaptar.kz/internal/kitaptar/service/mock"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 func TestHandler_createBook(t *testing.T) {

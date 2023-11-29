@@ -7,3 +7,9 @@ func WithUserCache(user UserCacher) Option {
 		cache.UserCache = user
 	}
 }
+
+func WithCodeCache(code CodeCacher) Option {
+	return func(cache *AppCache) {
+		cache.CodeCache = code
+	}
+}

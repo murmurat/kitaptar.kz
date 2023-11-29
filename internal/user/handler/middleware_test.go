@@ -2,12 +2,13 @@ package handler
 
 import (
 	"errors"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	mock_service "github.com/murat96k/kitaptar.kz/internal/user/service/mock"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestHandler_authMiddleware(t *testing.T) {

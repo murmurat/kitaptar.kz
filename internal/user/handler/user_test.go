@@ -3,14 +3,15 @@ package handler
 import (
 	"bytes"
 	"errors"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/user/entity"
 	mock_service "github.com/murat96k/kitaptar.kz/internal/user/service/mock"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestHandler_updateUser(t *testing.T) {
@@ -134,7 +135,7 @@ func TestHandler_getUser(t *testing.T) {
 				}, nil)
 			},
 			expectedStatusCode:   302,
-			expectedResponseBody: `{"id":"6f50ba79-1820-40c0-9c23-800400575c65","firstname":"test_user","lastname":"test_user","password":"password","email":"test_user@gmail.com","CreatedAt":"0001-01-01T00:00:00Z"}`,
+			expectedResponseBody: `{"id":"6f50ba79-1820-40c0-9c23-800400575c65","firstname":"test_user","lastname":"test_user","password":"password","email":"test_user@gmail.com","IsVerified":false,"CreatedAt":"0001-01-01T00:00:00Z"}`,
 		},
 		{
 			name:    "Empty user id",

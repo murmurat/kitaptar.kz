@@ -3,12 +3,13 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/google/uuid"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/entity"
-	"strings"
-	"time"
 )
 
 func (p *Postgres) GetUserBooks(email string) ([]entity.Book, error) {
@@ -114,6 +115,7 @@ func (p *Postgres) CreateBook(ctx context.Context, req *api.BookRequest) (string
 
 	err = p.Pool.QueryRow(ctx, query, req.AuthorId, req.Annotation, req.Name, req.Genre, req.ImagePath, req.FilePathId, time.Now()).Scan(&bookId)
 	if err != nil {
+		//nolint
 		tx.Rollback(ctx)
 		return "", err
 	}
@@ -166,7 +168,6 @@ func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookReque
 	if req.ImagePath != "" {
 		values = append(values, fmt.Sprintf("image_path=$%d", paramCount))
 		params = append(params, req.ImagePath)
-		paramCount++
 	}
 
 	setQuery := strings.Join(values, ", ")
@@ -180,4 +181,50 @@ func (p *Postgres) UpdateBook(ctx context.Context, id string, req *api.BookReque
 	}
 
 	return nil
+}
+
+func (p *Postgres) AddToFavorites(ctx context.Context, userId, bookId string) (string, error) {
+
+	tx, err := p.Pool.Begin(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	var favoriteId string
+	query := fmt.Sprintf("INSERT INTO %s (user_id, book_id) VALUES ($1, $2) RETURNING id", favoritesTable)
+
+	err = p.Pool.QueryRow(ctx, query, userId, bookId).Scan(&favoriteId)
+	if err != nil {
+		//nolint
+		tx.Rollback(ctx)
+		return "", err
+	}
+
+	return favoriteId, tx.Commit(ctx)
+}
+
+func (p *Postgres) DeleteFromFavorites(ctx context.Context, favoriteId string) error {
+
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", favoritesTable)
+
+	_, err := p.Pool.Exec(ctx, query, favoriteId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Postgres) GetFromFavorites(ctx context.Context, userId, bookId string) (*entity.FavoriteBook, error) {
+
+	favorite := new(entity.FavoriteBook)
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE user_id=$1 AND book_id=$2", favoritesTable)
+
+	err := pgxscan.Get(ctx, p.Pool, favorite, query, strings.TrimSpace(userId), strings.TrimSpace(bookId))
+	if err != nil {
+		return nil, err
+	}
+
+	return favorite, nil
 }

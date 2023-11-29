@@ -1,6 +1,12 @@
 package app
 
 import (
+	"fmt"
+	"github.com/murat96k/kitaptar.kz/pkg/debugserver"
+	"log"
+	"os"
+	"os/signal"
+
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/cache"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/config"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/handler"
@@ -9,9 +15,6 @@ import (
 	pkg_redis "github.com/murat96k/kitaptar.kz/pkg/cache/kitaptar"
 	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
 	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
-	"log"
-	"os"
-	"os/signal"
 )
 
 func Run(cfg *config.Config) error {
@@ -50,6 +53,11 @@ func Run(cfg *config.Config) error {
 		httpserver.WithPort(cfg.HttpServer.Port),
 		httpserver.WithShutdownTimeout(cfg.HttpServer.ShutdownTimeout),
 	)
+
+	debugServer := debugserver.New(debugserver.Profiler(), debugserver.WithAddress(fmt.Sprintf("%s:%s", cfg.DebugServer.Host, cfg.DebugServer.Port)))
+
+	log.Println("debug server started")
+	debugServer.Start()
 	log.Println("server started")
 	server.Start()
 

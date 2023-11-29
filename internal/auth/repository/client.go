@@ -5,12 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
-)
 
-import "github.com/jackc/pgx/v4/pgxpool"
-
-const (
-	usersTable = "users"
+	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 type Postgres struct {

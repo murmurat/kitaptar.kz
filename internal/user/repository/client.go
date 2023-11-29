@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
-)
 
-import "github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v4/pgxpool"
+)
 
 const (
 	usersTable = "users"

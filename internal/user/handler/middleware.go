@@ -2,10 +2,11 @@ package handler
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/murat96k/kitaptar.kz/api"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
 )
 
 const (

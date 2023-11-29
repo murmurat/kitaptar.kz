@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/entity"
-	"strings"
-	"time"
 )
 
 func (p *Postgres) GetAllAuthors(ctx context.Context) ([]entity.Author, error) {
@@ -97,6 +98,7 @@ func (p *Postgres) CreateAuthor(ctx context.Context, req *api.AuthorRequest) (st
 
 	err = p.Pool.QueryRow(ctx, query, req.Firstname, req.Lastname, req.ImagePath, req.AboutAuthor, time.Now()).Scan(&authorId)
 	if err != nil {
+		//nolint
 		tx.Rollback(ctx)
 		return "", err
 	}

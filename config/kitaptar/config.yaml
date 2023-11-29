@@ -19,6 +19,7 @@ Auth:
 
 redis:
   address: 'localhost:6379'
+  db: 2
   TimeToLive: 24h
 
 Transport:
@@ -28,3 +29,7 @@ Transport:
   UserGrpc:
     Host: localhost:9090
     Port: ':9090'
+
+DebugServer:
+  host: 'localhost'
+  port: '8083'

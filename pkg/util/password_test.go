@@ -13,12 +13,11 @@ func TestHashPassword(t *testing.T) {
 	require.NotEmpty(t, hashedpassword)
 	require.NotEqual(t, hashedpassword, "")
 	require.NotNil(t, hashedpassword)
-
 }
 
 func TestCheckPassword(t *testing.T) {
-	hashedpassword, err := HashPassword(password)
-	err = CheckPassword(password, hashedpassword)
+	hashedpassword, _ := HashPassword(password)
+	err := CheckPassword(password, hashedpassword)
 	require.NoError(t, err)
 	require.Nil(t, err)
 

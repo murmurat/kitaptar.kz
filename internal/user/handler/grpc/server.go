@@ -2,10 +2,11 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/murat96k/kitaptar.kz/internal/user/handler/grpc/v1"
+	"net"
+
+	v1 "github.com/murat96k/kitaptar.kz/internal/user/handler/grpc/v1"
 	"github.com/uristemov/auth-user-grpc/protobuf"
 	"google.golang.org/grpc"
-	"net"
 )
 
 type Server struct {
@@ -34,6 +35,7 @@ func (s *Server) Start() error {
 
 	protobuf.RegisterUserServer(s.grpcServer, s.service)
 
+	//nolint
 	go s.grpcServer.Serve(listener)
 
 	return nil

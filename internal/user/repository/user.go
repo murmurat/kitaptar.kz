@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/user/entity"
-	"strings"
-	"time"
 )
 
 func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) (string, error) {
@@ -31,6 +32,7 @@ func (p *Postgres) CreateUser(ctx context.Context, u *entity.User) (string, erro
 
 	err = p.Pool.QueryRow(ctx, query, u.Email, u.FirstName, u.LastName, u.Password, time.Now()).Scan(&userId)
 	if err != nil {
+		//nolint
 		tx.Rollback(ctx)
 		return "", err
 	}
@@ -92,6 +94,10 @@ func (p *Postgres) UpdateUser(ctx context.Context, id string, user *api.UpdateUs
 		values = append(values, fmt.Sprintf("password=$%d", paramCount))
 		params = append(params, user.Password)
 		paramCount++
+	}
+	if user.IsVerified != false {
+		values = append(values, fmt.Sprintf("is_verified=$%d", paramCount))
+		params = append(params, true)
 	}
 
 	setQuery := strings.Join(values, ", ")

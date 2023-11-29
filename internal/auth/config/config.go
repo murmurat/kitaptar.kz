@@ -28,6 +28,17 @@ type Database struct {
 }
 
 type Auth struct {
+	Access  Access  `mapstructure:"Access"`
+	Refresh Refresh `mapstructure:"Refresh"`
+}
+
+type Access struct {
+	PasswordSecretKey string        `mapstructure:"PasswordSecretKey"`
+	JwtSecretKey      string        `mapstructure:"JwtSecretKey"`
+	TimeToLive        time.Duration `mapstructure:"TimeToLive"`
+}
+
+type Refresh struct {
 	PasswordSecretKey string        `mapstructure:"PasswordSecretKey"`
 	JwtSecretKey      string        `mapstructure:"JwtSecretKey"`
 	TimeToLive        time.Duration `mapstructure:"TimeToLive"`
@@ -50,6 +61,7 @@ type UserGrpcTransport struct {
 
 type RedisConfig struct {
 	Address        string        `mapstructure:"address"`
+	DB             int           `mapstructure:"db"`
 	ExpirationTime time.Duration `mapstructure:"TimeToLive"`
 }
 
