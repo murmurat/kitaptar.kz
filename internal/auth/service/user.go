@@ -6,11 +6,14 @@ import (
 	"errors"
 	"fmt"
 	"github.com/murat96k/kitaptar.kz/internal/auth/entity"
+	"github.com/murat96k/kitaptar.kz/internal/auth/metrics"
 	"github.com/murat96k/kitaptar.kz/pkg/util"
 	"github.com/uristemov/auth-user-grpc/models"
 )
 
 func (m *Manager) CreateUser(ctx context.Context, u *entity.User) (string, error) {
+
+	metrics.Auth.Add(1)
 
 	hashPassword, err := util.HashPassword(u.Password)
 	if err != nil {
