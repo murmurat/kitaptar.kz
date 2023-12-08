@@ -9,6 +9,7 @@ type Config struct {
 	Auth       Auth        `mapstructure:"Auth"`
 	Redis      RedisConfig `mapstructure:"Redis"`
 	SMTP       SMTPConfig  `mapstructure:"SMTP"`
+	Kafka      Kafka       `mapstructure:"Kafka"`
 }
 
 type HttpServer struct {
@@ -48,4 +49,18 @@ type SMTPConfig struct {
 	Port     int    `mapstructure:"port"`
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
+}
+
+type Kafka struct {
+	Brokers  []string `mapstructure:"brokers"`
+	Producer Producer `mapstructure:"producer"`
+	Consumer Consumer `mapstructure:"consumer"`
+}
+
+type Producer struct {
+	Topic string `mapstructure:"topic"`
+}
+
+type Consumer struct {
+	Topics []string `mapstructure:"topics"`
 }

@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/murat96k/kitaptar.kz/internal/user/handler/consumer/dto"
 	"log"
 	"math/rand"
 	"net/smtp"
@@ -22,18 +25,19 @@ func (m *Manager) CreateUser(ctx context.Context, u *entity.User) (string, error
 	}
 
 	// Seed the random number generator
+	//nolint
 	rand.Seed(time.Now().UnixNano())
 
 	// Generate a random 6-digit code
 	code := fmt.Sprintf("%06d", rand.Intn(1000000))
 
-	go m.SendConfirmCode(u.Email, code)
-
-	err = m.Cache.CodeCache.SetCode(ctx, u.Email, code, time.Minute*5)
+	b, err := json.Marshal(&dto.UserCode{Code: code, Email: u.Email})
 	if err != nil {
-		log.Printf("Redis set code cache error: %v", err)
-		return "", err
+		return "", fmt.Errorf("failed to marshall UserCode err: %w", err)
 	}
+
+	m.userVerificationProducer.ProduceMessage(b)
+
 	log.Println("Email sent successfully")
 
 	return id, nil
@@ -175,6 +179,47 @@ func (m *Manager) ConfirmUser(ctx context.Context, userID, code string) error {
 	}
 
 	err = m.Repository.UpdateUser(ctx, userID, &api.UpdateUserRequest{IsVerified: true})
+	if err != nil {
+		return err
+	}
+
+	user.IsVerified = true
+
+	return m.Cache.UserCache.SetUser(ctx, user)
+}
+
+func (m *Manager) GetAllUsers(ctx context.Context, userID string) ([]entity.User, error) {
+
+	user, err := m.Repository.GetUserById(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Role != "admin" {
+		return nil, errors.New("Insufficient permissions")
+	}
+
+	return m.Repository.GetAllUsers(ctx)
+}
+
+func (m *Manager) SetUserRoleById(ctx context.Context, userID, targetUserId, role string) error {
+
+	user, err := m.Repository.GetUserById(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.Role != "admin" {
+		return errors.New("Insufficient permissions")
+	}
+
+	err = m.Repository.SetUserRoleById(ctx, targetUserId, role)
+	if err != nil {
+		return err
+	}
+
+	user.Role = role
+	err = m.Cache.UserCache.SetUser(ctx, user)
 	if err != nil {
 		return err
 	}

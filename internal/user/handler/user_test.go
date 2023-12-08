@@ -98,7 +98,7 @@ func TestHandler_updateUser(t *testing.T) {
 			mockHandler := New(mockService)
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("PUT", "/user/update", bytes.NewBufferString(testCase.inputBody))
+			request := httptest.NewRequest("PUT", "/users/", bytes.NewBufferString(testCase.inputBody))
 
 			request.Header.Set("Authorization", "Bearer token")
 
@@ -135,7 +135,7 @@ func TestHandler_getUser(t *testing.T) {
 				}, nil)
 			},
 			expectedStatusCode:   302,
-			expectedResponseBody: `{"id":"6f50ba79-1820-40c0-9c23-800400575c65","firstname":"test_user","lastname":"test_user","password":"password","email":"test_user@gmail.com","IsVerified":false,"CreatedAt":"0001-01-01T00:00:00Z"}`,
+			expectedResponseBody: `{"id":"6f50ba79-1820-40c0-9c23-800400575c65","firstname":"test_user","lastname":"test_user","password":"password","email":"test_user@gmail.com","is_verified":false,"role":"","CreatedAt":"0001-01-01T00:00:00Z"}`,
 		},
 		{
 			name:    "Empty user id",
@@ -179,7 +179,7 @@ func TestHandler_getUser(t *testing.T) {
 			mockHandler := New(mockService)
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "/user/data", bytes.NewBufferString(testCase.inputID))
+			request := httptest.NewRequest("GET", "/users/", bytes.NewBufferString(testCase.inputID))
 			request.Header.Set("Authorization", "Bearer token")
 
 			mockHandler.InitRouter().ServeHTTP(recorder, request)
@@ -253,7 +253,7 @@ func TestHandler_deleteUser(t *testing.T) {
 			mockHandler := New(mockService)
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("DELETE", "/user/delete", bytes.NewBufferString(testCase.inputID))
+			request := httptest.NewRequest("DELETE", "/users/", bytes.NewBufferString(testCase.inputID))
 			request.Header.Set("Authorization", "Bearer token")
 
 			mockHandler.InitRouter().ServeHTTP(recorder, request)

@@ -13,4 +13,6 @@ type Repository interface {
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 	UpdateUser(ctx context.Context, id string, req *api.UpdateUserRequest) error
 	DeleteUser(ctx context.Context, id string) error
+	GetAllUsers(ctx context.Context) ([]entity.User, error)
+	SetUserRoleById(ctx context.Context, userID, role string) error
 }

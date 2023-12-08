@@ -361,7 +361,7 @@ func TestHandler_getAllBooks(t *testing.T) {
 			name: "OK",
 			mockBehavior: func(s *mock_service.MockService) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().GetAllBooks(gomock.Any()).Return([]entity.Book{{
+				s.EXPECT().GetAllBooks(gomock.Any(), gomock.Any()).Return([]entity.Book{{
 					AuthorId:   uuid.Nil,
 					Annotation: "test_annotation",
 					Name:       "test_name",
@@ -377,7 +377,7 @@ func TestHandler_getAllBooks(t *testing.T) {
 			name: "Service error",
 			mockBehavior: func(s *mock_service.MockService) {
 				s.EXPECT().VerifyToken("token").Return(userID, nil)
-				s.EXPECT().GetAllBooks(gomock.Any()).Return([]entity.Book{}, errors.New("something went wrong"))
+				s.EXPECT().GetAllBooks(gomock.Any(), gomock.Any()).Return([]entity.Book{}, errors.New("something went wrong"))
 			},
 			expectedStatusCode:   500,
 			expectedResponseBody: `{"message":"something went wrong"}`,

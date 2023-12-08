@@ -21,11 +21,17 @@ func (p *Postgres) GetUserBooks(email string) ([]entity.Book, error) {
 	return books, nil
 }
 
-func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
+func (p *Postgres) GetAllBooks(ctx context.Context, sortBy string) ([]entity.Book, error) {
 
 	var books []entity.Book
 
-	query := fmt.Sprintf("SELECT id, name, genre, annotation, author_id, image_path, file_path_id FROM %s", bookTable)
+	query := fmt.Sprintf("SELECT id, name, genre, annotation, author_id, image_path, file_path_id, created_at FROM %s", bookTable)
+
+	if sortBy == "asc" {
+		query += " ORDER BY created_at ASC"
+	} else if sortBy == "desc" {
+		query += " ORDER BY created_at DESC"
+	}
 
 	rows, err := p.Pool.Query(ctx, query)
 	if err != nil {
@@ -35,7 +41,7 @@ func (p *Postgres) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
 
 	for rows.Next() {
 		book := entity.Book{}
-		err = rows.Scan(&book.Id, &book.Name, &book.Genre, &book.Annotation, &book.AuthorId, &book.ImagePath, &book.FilePathId)
+		err = rows.Scan(&book.Id, &book.Name, &book.Genre, &book.Annotation, &book.AuthorId, &book.ImagePath, &book.FilePathId, &book.CreatedAt)
 		books = append(books, book)
 		if err != nil {
 			return nil, err

@@ -16,4 +16,6 @@ type Service interface {
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
 	DeleteUser(ctx context.Context, id string) error
 	ConfirmUser(ctx context.Context, userID, code string) error
+	GetAllUsers(ctx context.Context, userID string) ([]entity.User, error)
+	SetUserRoleById(ctx context.Context, userID, targetUserId, role string) error
 }

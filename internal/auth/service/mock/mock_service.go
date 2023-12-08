@@ -51,16 +51,33 @@ func (mr *MockServiceMockRecorder) CreateUser(ctx, u interface{}) *gomock.Call {
 }
 
 // Login mocks base method.
-func (m *MockService) Login(ctx context.Context, email, password string) (string, error) {
+func (m *MockService) Login(ctx context.Context, email, password string) (string, string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Login", ctx, email, password)
 	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // Login indicates an expected call of Login.
 func (mr *MockServiceMockRecorder) Login(ctx, email, password interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockService)(nil).Login), ctx, email, password)
+}
+
+// Refresh mocks base method.
+func (m *MockService) Refresh(ctx context.Context, refreshToken string) (string, string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Refresh", ctx, refreshToken)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(string)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Refresh indicates an expected call of Refresh.
+func (mr *MockServiceMockRecorder) Refresh(ctx, refreshToken interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Refresh", reflect.TypeOf((*MockService)(nil).Refresh), ctx, refreshToken)
 }

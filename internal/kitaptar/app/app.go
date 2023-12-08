@@ -2,19 +2,20 @@ package app
 
 import (
 	"fmt"
-	"github.com/murat96k/kitaptar.kz/pkg/debugserver"
-	"log"
-	"os"
-	"os/signal"
-
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/cache"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/config"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/handler"
+	"github.com/murat96k/kitaptar.kz/internal/kitaptar/metrics"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/repository"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/service"
 	pkg_redis "github.com/murat96k/kitaptar.kz/pkg/cache/kitaptar"
+	"github.com/murat96k/kitaptar.kz/pkg/debugserver"
 	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
 	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
+	"log"
+	"os"
+	"os/signal"
+	"time"
 )
 
 func Run(cfg *config.Config) error {
@@ -54,11 +55,21 @@ func Run(cfg *config.Config) error {
 		httpserver.WithShutdownTimeout(cfg.HttpServer.ShutdownTimeout),
 	)
 
+	go func() {
+		for {
+			now := time.Now()
+			time.Sleep(time.Until(time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())))
+			// Reset the counter for the new day WithLabelValues(time.Now().Format("2006-01-02"))
+			metrics.BookRequests.Reset()
+		}
+	}()
+
 	debugServer := debugserver.New(debugserver.Profiler(), debugserver.WithAddress(fmt.Sprintf("%s:%s", cfg.DebugServer.Host, cfg.DebugServer.Port)))
 
-	log.Println("debug server started")
+	log.Printf("debug server started at %s port\n", cfg.DebugServer.Port)
 	debugServer.Start()
-	log.Println("server started")
+	log.Printf("server for kitaptar started at %s port\n", cfg.HttpServer.Port)
+	//nolint
 	server.Start()
 
 	interrupt := make(chan os.Signal, 1)

@@ -2,15 +2,28 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	_ "github.com/murat96k/kitaptar.kz/docs"
+	_ "github.com/murat96k/kitaptar.kz/internal/kitaptar/docs"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+// @title       kitaptar.kz Kitaptar service
+// @description Service for books, authors...
+// @version     1.0
+// @host        localhost:8082
+// @BasePath    /
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+// @contact.name   Meiirzhan Uristemov
+// @contact.email  admin@kitaptar.kz
 func (h *Handler) InitRouter() *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	router.Use(HTTPMetrics())
 
 	book := router.Group("/books", h.authMiddleware())
 	{
@@ -49,5 +62,6 @@ func (h *Handler) InitRouter() *gin.Engine {
 		filePath.PUT("/:id", h.updateFilePath)
 	}
 
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 	return router
 }

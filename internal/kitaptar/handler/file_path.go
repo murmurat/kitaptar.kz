@@ -7,18 +7,15 @@ import (
 	"github.com/murat96k/kitaptar.kz/api"
 )
 
-//func (h *Handler) getBookFilePaths(ctx *gin.Context) {
-//		filePathId := ctx.Param("id")
-//
-//		filePath, err := h.srvs.GetBookFilePaths(ctx, filePathId)
-//		if !err {
-//			log.Printf("getBookFilePaths err %w", err)
-//			ctx.JSON(http.StatusInternalServerError, err)
-//			return
-//		}
-//		ctx.JSON(http.StatusOK, filePath)
-//}
-
+// getAllFilePaths godoc
+// @Summary      Get all file paths
+// @Security	 ApiKeyAuth
+// @Description  Get all file paths
+// @Tags         file_paths
+// @Produce      json
+// @Success      200  {object}  []entity.FilePath
+// @Failure      500  {object}  api.Error
+// @Router       /file_paths [get]
 func (h *Handler) getAllFilePaths(ctx *gin.Context) {
 
 	filePaths, err := h.srvs.GetAllFilePaths(ctx)
@@ -31,6 +28,17 @@ func (h *Handler) getAllFilePaths(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, filePaths)
 }
 
+// getFilePathById godoc
+// @Summary      Get file path by id
+// @Security	 ApiKeyAuth
+// @Description  Get file path by id
+// @Tags         file_paths
+// @Param id path  string true "id"
+// @Produce      json
+// @Success      200  {object}  entity.FilePath
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /file_paths/{id} [get]
 func (h *Handler) getFilePathById(ctx *gin.Context) {
 
 	filePathId := ctx.Param("id")
@@ -48,6 +56,18 @@ func (h *Handler) getFilePathById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, filePath)
 }
 
+// createFilePath godoc
+// @Summary      Create File Paths
+// @Security	 ApiKeyAuth
+// @Description  Create new file paths
+// @Tags         file_paths
+// @Param req body api.FilePathRequest true "req"
+// @Accept       json
+// @Produce      json
+// @Success      201  {object}  api.Response
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /file_paths [post]
 func (h *Handler) createFilePath(ctx *gin.Context) {
 	var req api.FilePathRequest
 
@@ -65,6 +85,19 @@ func (h *Handler) createFilePath(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, api.Response{Message: filePathId})
 }
 
+// updateFilePath godoc
+// @Summary      Update file path
+// @Security	 ApiKeyAuth
+// @Description  Update existing file path
+// @Tags         file_paths
+// @Param req body api.FilePathRequest true "request"
+// @Param id path string true "id"
+// @Accept       json
+// @Produce      json
+// @Success      200  {object}  api.FilePathRequest
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /file_paths/{id} [put]
 func (h *Handler) updateFilePath(ctx *gin.Context) {
 	var req api.FilePathRequest
 
@@ -92,6 +125,17 @@ func (h *Handler) updateFilePath(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, req)
 }
 
+// deleteFilePath godoc
+// @Summary      Delete file paths
+// @Security	 ApiKeyAuth
+// @Description  Delete existing file paths
+// @Tags         file_paths
+// @Param id path string true "id"
+// @Produce      json
+// @Success      200  {object}  api.Response
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /file_paths/{id} [delete]
 func (h *Handler) deleteFilePath(ctx *gin.Context) {
 
 	filePathId := ctx.Param("id")

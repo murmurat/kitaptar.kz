@@ -12,6 +12,7 @@ type User struct {
 	LastName   string    `json:"lastname" binding:"required" db:"last_name"`
 	Password   string    `json:"password" binding:"required" db:"password"`
 	Email      string    `json:"email" binding:"required" db:"email" gorm:"unique"`
-	IsVerified bool      `db:"is_verified"`
+	IsVerified bool      `json:"is_verified" db:"is_verified"`
+	Role       string    `json:"role" db:"role"`
 	CreatedAt  time.Time
 }

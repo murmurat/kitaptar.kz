@@ -1,6 +1,8 @@
 package app
 
 import (
+	"github.com/murat96k/kitaptar.kz/internal/kafka"
+	"github.com/murat96k/kitaptar.kz/internal/user/handler/consumer"
 	"log"
 	"os"
 	"os/signal"
@@ -44,10 +46,24 @@ func Run(cfg *config.Config) error {
 		log.Fatalf("[ERROR] create cache error: %s", err.Error())
 	}
 
-	service := service.New(db, cfg, token, *cache)
+	userVerificationProducer, err := kafka.NewProducer(cfg.Kafka)
+	if err != nil {
+		log.Panicf("failed NewProducer err: %v", err)
+	}
+
+	service := service.New(db, cfg, token, *cache, userVerificationProducer)
 	handler := handler.New(service)
 
-	log.Println("starting grpc server...")
+	userVerificationConsumerCallback := consumer.NewUserVerificationCallback(*service)
+
+	userVerificationConsumer, err := kafka.NewConsumer(cfg.Kafka, userVerificationConsumerCallback)
+	if err != nil {
+		log.Panicf("failed NewConsumer err: %v", err)
+	}
+
+	go userVerificationConsumer.Start()
+
+	log.Printf("starting grpc server... at %s port\n", cfg.GrpcServer.Port)
 	grpcService := v1.NewService(service)
 	grpcServer := grpc.NewServer(cfg.GrpcServer.Port, grpcService)
 	err = grpcServer.Start()
@@ -63,7 +79,8 @@ func Run(cfg *config.Config) error {
 		httpserver.WithPort(cfg.HttpServer.Port),
 		httpserver.WithShutdownTimeout(cfg.HttpServer.ShutdownTimeout),
 	)
-	log.Println("server started")
+	log.Printf("server for user started at %s port\n", cfg.HttpServer.Port)
+	//nolint
 	server.Start()
 
 	interrupt := make(chan os.Signal, 1)

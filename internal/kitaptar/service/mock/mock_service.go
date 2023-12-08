@@ -168,18 +168,18 @@ func (mr *MockServiceMockRecorder) GetAllAuthors(ctx interface{}) *gomock.Call {
 }
 
 // GetAllBooks mocks base method.
-func (m *MockService) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
+func (m *MockService) GetAllBooks(ctx context.Context, sortBy string) ([]entity.Book, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllBooks", ctx)
+	ret := m.ctrl.Call(m, "GetAllBooks", ctx, sortBy)
 	ret0, _ := ret[0].([]entity.Book)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllBooks indicates an expected call of GetAllBooks.
-func (mr *MockServiceMockRecorder) GetAllBooks(ctx interface{}) *gomock.Call {
+func (mr *MockServiceMockRecorder) GetAllBooks(ctx, sortBy interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllBooks", reflect.TypeOf((*MockService)(nil).GetAllBooks), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllBooks", reflect.TypeOf((*MockService)(nil).GetAllBooks), ctx, sortBy)
 }
 
 // GetAllFilePaths mocks base method.

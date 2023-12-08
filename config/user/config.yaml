@@ -30,3 +30,12 @@ SMTP:
   port: 587
   username: "meirovan777@gmail.com"
   password: "xxrz aifc iqem bqbh"
+
+Kafka:
+  Brokers:
+    - 127.0.0.1:19092
+  Producer:
+    topic: "user-verification"
+  Consumer:
+    topics:
+      - "user-verification"

@@ -49,3 +49,8 @@ migration-create:
 migration-version:
 	migrate -database "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" -path migrations/pg force 2
 
+swag-init:
+	swag init --parseDependency -g handler/router.go
+
+go-test:
+	go test ./... -coverprofile=coverage.out

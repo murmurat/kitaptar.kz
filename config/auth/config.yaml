@@ -16,11 +16,11 @@ Auth:
   Access:
     JwtSecretKey: "AllYourBase"
     PasswordSecretKey: "dsadjflshfjghfdjkggfdj21321"
-    TimeToLive: 15m
+    TimeToLive: 30m
   Refresh:
     JwtSecretKey: "AllYourRefreshBase"
     PasswordSecretKey: "dsadjflshfjghfdjkggfdj99999"
-    TimeToLive: 30m
+    TimeToLive: 60m
 
 
 Redis:
@@ -36,12 +36,11 @@ Transport:
     Host: localhost:9090
     Port: ':9090'
 
-# TODO Implement kafka
-#Kafka:
-#  Brokers:
-#    - 127.0.0.1:19092
-#  Producer:
-#    topic: "user-verification"
-#  Consumer:
-#    topics:
-#      - "user-verification"
+Kafka:
+  Brokers:
+    - 127.0.0.1:19092
+  Producer:
+    topic: "user-verification"
+  Consumer:
+    topics:
+      - "user-verification"

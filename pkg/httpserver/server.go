@@ -25,11 +25,13 @@ func New(handler http.Handler, opts ...Option) *Server {
 	return s
 }
 
-func (s *Server) Start() {
-	go func() {
-		s.notify <- s.server.ListenAndServe()
-		close(s.notify)
-	}()
+func (s *Server) Start() error {
+	//go func() {
+	err := s.server.ListenAndServe()
+	s.notify <- err
+	close(s.notify)
+	return err
+	//}()
 }
 
 func (s *Server) Shutdown() error {

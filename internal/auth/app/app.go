@@ -1,6 +1,7 @@
 package app
 
 import (
+	"golang.org/x/sync/errgroup"
 	"log"
 	"os"
 	"os/signal"
@@ -51,6 +52,8 @@ func Run(cfg *config.Config) error {
 	service := service.New(db, cfg, token, grpcUserClient, *cache)
 	handler := handler.New(service)
 
+	g := errgroup.Group{}
+
 	server := httpserver.New(handler.InitRouter(),
 		httpserver.WithReadTimeout(cfg.HttpServer.ReadTimeout),
 		httpserver.WithWriteTimeout(cfg.HttpServer.WriteTimeout),
@@ -58,8 +61,21 @@ func Run(cfg *config.Config) error {
 		httpserver.WithShutdownTimeout(cfg.HttpServer.ShutdownTimeout),
 	)
 
-	log.Println("server started")
-	server.Start()
+	g.Go(func() error {
+		log.Printf("auth server started at %s port\n", cfg.HttpServer.Port)
+		err = server.Start()
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	// Ждем пока все горутины не будут завершены
+	if err = g.Wait(); err != nil {
+		log.Printf("[INFO] process terminated, %s", err.Error())
+		return err
+	}
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)

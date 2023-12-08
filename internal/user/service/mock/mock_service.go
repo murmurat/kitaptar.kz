@@ -36,6 +36,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// ConfirmUser mocks base method.
+func (m *MockService) ConfirmUser(ctx context.Context, userID, code string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmUser", ctx, userID, code)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmUser indicates an expected call of ConfirmUser.
+func (mr *MockServiceMockRecorder) ConfirmUser(ctx, userID, code interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmUser", reflect.TypeOf((*MockService)(nil).ConfirmUser), ctx, userID, code)
+}
+
 // CreateUser mocks base method.
 func (m *MockService) CreateUser(ctx context.Context, u *entity.User) (string, error) {
 	m.ctrl.T.Helper()
@@ -63,6 +77,21 @@ func (m *MockService) DeleteUser(ctx context.Context, id string) error {
 func (mr *MockServiceMockRecorder) DeleteUser(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockService)(nil).DeleteUser), ctx, id)
+}
+
+// GetAllUsers mocks base method.
+func (m *MockService) GetAllUsers(ctx context.Context, userID string) ([]entity.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllUsers", ctx, userID)
+	ret0, _ := ret[0].([]entity.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllUsers indicates an expected call of GetAllUsers.
+func (mr *MockServiceMockRecorder) GetAllUsers(ctx, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllUsers", reflect.TypeOf((*MockService)(nil).GetAllUsers), ctx, userID)
 }
 
 // GetUserByEmail mocks base method.
@@ -93,6 +122,20 @@ func (m *MockService) GetUserById(ctx context.Context, id string) (*entity.User,
 func (mr *MockServiceMockRecorder) GetUserById(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserById", reflect.TypeOf((*MockService)(nil).GetUserById), ctx, id)
+}
+
+// SetUserRoleById mocks base method.
+func (m *MockService) SetUserRoleById(ctx context.Context, userID, targetUserId, role string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetUserRoleById", ctx, userID, targetUserId, role)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetUserRoleById indicates an expected call of SetUserRoleById.
+func (mr *MockServiceMockRecorder) SetUserRoleById(ctx, userID, targetUserId, role interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetUserRoleById", reflect.TypeOf((*MockService)(nil).SetUserRoleById), ctx, userID, targetUserId, role)
 }
 
 // UpdateUser mocks base method.

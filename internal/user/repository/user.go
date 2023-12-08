@@ -58,8 +58,8 @@ func (p *Postgres) GetUserById(ctx context.Context, id string) (*entity.User, er
 
 	user := new(entity.User)
 
-	query := fmt.Sprintf("SELECT id, email, first_name, last_name, password FROM %s WHERE id=$1", usersTable)
-
+	query := fmt.Sprintf("SELECT id, email, first_name, last_name, role, is_verified, password, created_at FROM %s WHERE id=$1", usersTable)
+	//user.Id, user.Email, user.FirstName, user.LastName, user.Role, user.IsVerified, user.Password
 	err := pgxscan.Get(ctx, p.Pool, user, query, id)
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func (p *Postgres) UpdateUser(ctx context.Context, id string, user *api.UpdateUs
 		params = append(params, user.Password)
 		paramCount++
 	}
-	if user.IsVerified != false {
+	if user.IsVerified {
 		values = append(values, fmt.Sprintf("is_verified=$%d", paramCount))
 		params = append(params, true)
 	}
@@ -117,6 +117,46 @@ func (p *Postgres) DeleteUser(ctx context.Context, id string) error {
 	query := fmt.Sprintf("DELETE FROM %s WHERE id=$1", usersTable)
 
 	_, err := p.Pool.Exec(ctx, query, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *Postgres) GetAllUsers(ctx context.Context) ([]entity.User, error) {
+
+	var users []entity.User
+
+	query := fmt.Sprintf("SELECT id, first_name, last_name, email, is_verified, role FROM %s", usersTable)
+
+	rows, err := p.Pool.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		user := entity.User{}
+		err = rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.IsVerified, &user.Role)
+		users = append(users, user)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (p *Postgres) SetUserRoleById(ctx context.Context, userID, role string) error {
+	query := fmt.Sprintf("UPDATE %s SET role=$1 WHERE id=$2", usersTable)
+
+	_, err := p.Pool.Exec(ctx, query, role, userID)
 	if err != nil {
 		return err
 	}

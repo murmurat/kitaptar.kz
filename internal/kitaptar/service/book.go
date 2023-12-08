@@ -13,8 +13,8 @@ func (m *Manager) GetUserBooks(email string) ([]entity.Book, error) {
 	return m.Repository.GetUserBooks(email)
 }
 
-func (m *Manager) GetAllBooks(ctx context.Context) ([]entity.Book, error) {
-	return m.Repository.GetAllBooks(ctx)
+func (m *Manager) GetAllBooks(ctx context.Context, sortBy string) ([]entity.Book, error) {
+	return m.Repository.GetAllBooks(ctx, sortBy)
 }
 
 func (m *Manager) GetBookById(ctx context.Context, id string) (*entity.Book, error) {

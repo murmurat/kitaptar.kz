@@ -1,0 +1,251 @@
+basePath: /
+definitions:
+  api.Error:
+    properties:
+      message:
+        type: string
+    type: object
+  api.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  api.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      isVerified:
+        type: boolean
+      lastname:
+        type: string
+      password:
+        type: string
+    type: object
+  entity.User:
+    properties:
+      createdAt:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      id:
+        type: string
+      is_verified:
+        type: boolean
+      lastname:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - password
+    type: object
+  github_com_murat96k_kitaptar_kz_internal_user_handler_dto.CodeInput:
+    properties:
+      code:
+        type: string
+    required:
+    - code
+    type: object
+  github_com_murat96k_kitaptar_kz_internal_user_handler_dto.RoleInput:
+    properties:
+      role:
+        type: string
+    required:
+    - role
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  description: Service for users (Personal cabinet)
+  title: kitaptar.kz User service
+  version: "1.0"
+paths:
+  /admin/users:
+    get:
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.User'
+            type: array
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get all users
+      tags:
+      - admin
+  /admin/users/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Set user role by admin
+      parameters:
+      - description: request
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_murat96k_kitaptar_kz_internal_user_handler_dto.RoleInput'
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Set user role by admin
+      tags:
+      - admin
+  /users:
+    delete:
+      description: Delete existing user data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - user
+    get:
+      description: Get existing user data
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: Found
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Get user
+      tags:
+      - user
+    put:
+      consumes:
+      - application/json
+      description: Update existing user data
+      parameters:
+      - description: req body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/api.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Update user
+      tags:
+      - user
+  /users/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm registered user by code which send to email
+      parameters:
+      - description: req body
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_murat96k_kitaptar_kz_internal_user_handler_dto.CodeInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api.Error'
+        "401":
+          description: Unauthorized
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/api.Error'
+      security:
+      - ApiKeyAuth: []
+      summary: Confirm user by email
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

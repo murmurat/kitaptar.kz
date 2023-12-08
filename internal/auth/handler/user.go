@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/auth/entity"
+	"github.com/murat96k/kitaptar.kz/internal/auth/handler/dto"
 	"net/http"
 )
 
@@ -35,6 +36,17 @@ func (h *Handler) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, api.Response{Message: userId})
 }
 
+// loginUser godoc
+// @Summary      Login to app
+// @Description  Sign in to the app with auth service
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param req body api.LoginRequest true "req body"
+// @Success      200
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /login [post]
 func (h *Handler) loginUser(ctx *gin.Context) {
 
 	var req api.LoginRequest
@@ -55,13 +67,20 @@ func (h *Handler) loginUser(ctx *gin.Context) {
 	)
 }
 
+// refresh godoc
+// @Summary      Refresh token
+// @Description  Refresh access and refresh token by refresh token
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param req body dto.RefreshInput true "req body"
+// @Success      200
+// @Failure      400  {object}  api.Error
+// @Failure      500  {object}  api.Error
+// @Router       /refresh [post]
 func (h *Handler) refresh(ctx *gin.Context) {
 
-	type refreshInput struct {
-		Token string `json:"token" binding:"required"`
-	}
-
-	var oldRefreshToken refreshInput
+	var oldRefreshToken dto.RefreshInput
 
 	if err := ctx.BindJSON(&oldRefreshToken); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: "invalid input body"})

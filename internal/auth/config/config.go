@@ -8,7 +8,7 @@ type Config struct {
 	Auth       Auth        `mapstructure:"Auth"`
 	Transport  Transport   `mapstructure:"Transport"`
 	Redis      RedisConfig `mapstructure:"Redis"`
-	//	Kafka      Kafka      `mapstructure:"Kafka"`
+	Kafka      Kafka       `mapstructure:"Kafka"`
 }
 
 type HttpServer struct {
@@ -65,17 +65,16 @@ type RedisConfig struct {
 	ExpirationTime time.Duration `mapstructure:"TimeToLive"`
 }
 
-// TODO Implement Kafka and uncomment
-//type Kafka struct {
-//	Brokers  []string `mapstructure:"brokers"`
-//	Producer Producer `mapstructure:"producer"`
-//	Consumer Consumer `mapstructure:"consumer"`
-//}
-//
-//type Producer struct {
-//	Topic string `mapstructure:"topic"`
-//}
-//
-//type Consumer struct {
-//	Topics []string `mapstructure:"topics"`
-//}
+type Kafka struct {
+	Brokers  []string `mapstructure:"brokers"`
+	Producer Producer `mapstructure:"producer"`
+	Consumer Consumer `mapstructure:"consumer"`
+}
+
+type Producer struct {
+	Topic string `mapstructure:"topic"`
+}
+
+type Consumer struct {
+	Topics []string `mapstructure:"topics"`
+}
