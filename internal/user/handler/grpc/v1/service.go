@@ -2,10 +2,11 @@ package v1
 
 import (
 	"context"
+	"log"
+
 	"github.com/murat96k/kitaptar.kz/internal/user/entity"
 	"github.com/murat96k/kitaptar.kz/internal/user/service"
 	"github.com/uristemov/auth-user-grpc/protobuf"
-	"log"
 )
 
 type Service struct {

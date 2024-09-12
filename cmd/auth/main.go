@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/murat96k/kitaptar.kz/internal/auth/app"
 	"github.com/murat96k/kitaptar.kz/internal/auth/config"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func main() {

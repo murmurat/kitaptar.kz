@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/app"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/config"
 	"github.com/spf13/viper"
-	"log"
 )
 
 // @title           ONE LAB Kitaptar

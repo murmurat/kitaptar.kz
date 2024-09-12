@@ -3,6 +3,8 @@ package cache
 import (
 	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/murat96k/kitaptar.kz/internal/user/entity"
 )
 
@@ -44,5 +46,29 @@ func (c *Cache) SetUser(ctx context.Context, value *entity.User) error {
 }
 
 func (c *Cache) DeleteUser(ctx context.Context, key string) error {
+	return c.redisCli.Del(ctx, key).Err()
+}
+
+type CodeCacher interface {
+	GetCode(ctx context.Context, key string) (string, error)
+	SetCode(ctx context.Context, key, code string, expirationTime time.Duration) error
+	DeleteCode(ctx context.Context, key string) error
+}
+
+func (c *Cache) GetCode(ctx context.Context, key string) (string, error) {
+
+	value, err := c.redisCli.Get(ctx, key).Result()
+	if err != nil {
+		return "", err
+	}
+
+	return value, nil
+}
+
+func (c *Cache) SetCode(ctx context.Context, key, code string, expirationTime time.Duration) error {
+	return c.redisCli.Set(ctx, key, code, expirationTime).Err()
+}
+
+func (c *Cache) DeleteCode(ctx context.Context, key string) error {
 	return c.redisCli.Del(ctx, key).Err()
 }

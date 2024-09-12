@@ -13,12 +13,19 @@ Database:
   password: "postgres"
 
 Auth:
-  JwtSecretKey: "AllYourBase"
-  PasswordSecretKey: "dsadjflshfjghfdjkggfdj21321"
-  TimeToLive: 15m
+  Access:
+    JwtSecretKey: "AllYourBase"
+    PasswordSecretKey: "dsadjflshfjghfdjkggfdj21321"
+    TimeToLive: 15m
+  Refresh:
+    JwtSecretKey: "AllYourRefreshBase"
+    PasswordSecretKey: "dsadjflshfjghfdjkggfdj99999"
+    TimeToLive: 30m
+
 
 Redis:
   address: 'localhost:6379'
+  db: 0
   TimeToLive: 24h
 
 Transport:

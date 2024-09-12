@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/entity"
 )
@@ -27,4 +28,8 @@ type Repository interface {
 	GetFilePathById(ctx context.Context, id string) (*entity.FilePath, error)
 	DeleteFilePath(ctx context.Context, id string) error
 	UpdateFilePath(ctx context.Context, id string, req *api.FilePathRequest) error
+
+	AddToFavorites(ctx context.Context, userId, bookId string) (string, error)
+	DeleteFromFavorites(ctx context.Context, favoriteId string) error
+	GetFromFavorites(ctx context.Context, userId, bookId string) (*entity.FavoriteBook, error)
 }

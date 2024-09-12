@@ -98,3 +98,32 @@ func (m *Manager) UpdateBook(ctx context.Context, id string, req *api.BookReques
 
 	return nil
 }
+
+func (m *Manager) AddToFavorites(ctx context.Context, userId, bookId string) (string, error) {
+
+	favoriteId, err := m.Repository.AddToFavorites(ctx, userId, bookId)
+	if err != nil {
+		return "", err
+	}
+
+	return favoriteId, nil
+}
+
+func (m *Manager) DeleteFromFavorites(ctx context.Context, userId, bookId string) error {
+
+	favorite, err := m.GetFromFavorites(ctx, userId, bookId)
+	if err != nil {
+		return err
+	}
+
+	err = m.Repository.DeleteFromFavorites(ctx, favorite.Id.String())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *Manager) GetFromFavorites(ctx context.Context, userId, bookId string) (*entity.FavoriteBook, error) {
+	return m.Repository.GetFromFavorites(ctx, userId, bookId)
+}

@@ -6,10 +6,11 @@ type LoginRequest struct {
 }
 
 type UpdateUserRequest struct {
-	FirstName string `json:"firstname"`
-	LastName  string `json:"lastname"`
-	Password  string `json:"password"`
-	Email     string `json:"email"`
+	FirstName  string `json:"firstname"`
+	LastName   string `json:"lastname"`
+	Password   string `json:"password"`
+	Email      string `json:"email"`
+	IsVerified bool
 }
 
 //type RegisterRequest struct {

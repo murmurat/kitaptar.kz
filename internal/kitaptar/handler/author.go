@@ -1,9 +1,10 @@
 package handler
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/murat96k/kitaptar.kz/api"
-	"net/http"
 )
 
 func (h *Handler) getAllAuthors(ctx *gin.Context) {
@@ -50,14 +51,21 @@ func (h *Handler) getAuthorByName(ctx *gin.Context) {
 
 func (h *Handler) createAuthor(ctx *gin.Context) {
 
-	var req api.AuthorRequest
+	var req *api.AuthorRequest
+	var reqDto AuthorHandlerDto
 
-	if err := ctx.BindJSON(&req); err != nil {
+	if err := ctx.BindJSON(&reqDto); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, api.Error{Message: err.Error()})
 		return
 	}
 
-	authorId, err := h.srvs.CreateAuthor(ctx, &req)
+	builder := NewAuthorBuilder()
+
+	director := NewDirector(builder)
+
+	req = director.ConstructAuthor(reqDto.Firstname, reqDto.Lastname, reqDto.AboutAuthor, reqDto.ImagePath)
+
+	authorId, err := h.srvs.CreateAuthor(ctx, req)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, api.Error{Message: err.Error()})
 		return

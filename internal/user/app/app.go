@@ -1,19 +1,20 @@
 package app
 
 import (
+	"log"
+	"os"
+	"os/signal"
+
 	"github.com/murat96k/kitaptar.kz/internal/user/cache"
 	"github.com/murat96k/kitaptar.kz/internal/user/config"
 	"github.com/murat96k/kitaptar.kz/internal/user/handler"
 	"github.com/murat96k/kitaptar.kz/internal/user/handler/grpc"
-	"github.com/murat96k/kitaptar.kz/internal/user/handler/grpc/v1"
+	v1 "github.com/murat96k/kitaptar.kz/internal/user/handler/grpc/v1"
 	"github.com/murat96k/kitaptar.kz/internal/user/repository"
 	"github.com/murat96k/kitaptar.kz/internal/user/service"
 	pkg_redis "github.com/murat96k/kitaptar.kz/pkg/cache/user"
 	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
 	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
-	"log"
-	"os"
-	"os/signal"
 )
 
 func Run(cfg *config.Config) error {
@@ -38,7 +39,7 @@ func Run(cfg *config.Config) error {
 
 	appCache := cache.NewCache(redisClient, cfg.Redis.ExpirationTime)
 
-	cache, err := cache.NewAppCache(cache.WithUserCache(appCache))
+	cache, err := cache.NewAppCache(cache.WithUserCache(appCache), cache.WithCodeCache(appCache))
 	if err != nil {
 		log.Fatalf("[ERROR] create cache error: %s", err.Error())
 	}

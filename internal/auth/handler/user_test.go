@@ -3,12 +3,13 @@ package handler
 import (
 	"bytes"
 	"errors"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/murat96k/kitaptar.kz/internal/auth/entity"
 	mock_service "github.com/murat96k/kitaptar.kz/internal/auth/service/mock"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestHandler_createUser(t *testing.T) {

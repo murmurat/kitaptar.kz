@@ -2,10 +2,11 @@ package handler
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/murat96k/kitaptar.kz/api"
 	"net/http"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/murat96k/kitaptar.kz/api"
 )
 
 const (
@@ -40,6 +41,7 @@ func (h *Handler) authMiddleware() gin.HandlerFunc {
 
 }
 
+//nolint:all
 func getUserId(c *gin.Context) (string, error) {
 	idDirty, ok := c.Get(authUserID)
 	if !ok {

@@ -1,12 +1,13 @@
 package cache
 
 import (
-	"github.com/redis/go-redis/v9"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 type AppCache struct {
-	UserCache UserCacher
+	TokenCache TokenCacher
 }
 
 func NewAppCache(opts ...Option) (*AppCache, error) {

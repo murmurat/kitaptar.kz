@@ -36,6 +36,20 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 	return m.recorder
 }
 
+// ConfirmUser mocks base method.
+func (m *MockService) ConfirmUser(ctx context.Context, userID, code string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConfirmUser", ctx, userID, code)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConfirmUser indicates an expected call of ConfirmUser.
+func (mr *MockServiceMockRecorder) ConfirmUser(ctx, userID, code interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConfirmUser", reflect.TypeOf((*MockService)(nil).ConfirmUser), ctx, userID, code)
+}
+
 // CreateUser mocks base method.
 func (m *MockService) CreateUser(ctx context.Context, u *entity.User) (string, error) {
 	m.ctrl.T.Helper()

@@ -5,14 +5,15 @@ import (
 	"database/sql"
 	"fmt"
 	"net/url"
-)
 
-import "github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v4/pgxpool"
+)
 
 const (
 	bookTable      = "books"
 	authorTable    = "authors"
 	filePathsTable = "file_paths"
+	favoritesTable = "favorites"
 )
 
 type Postgres struct {

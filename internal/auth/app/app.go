@@ -1,6 +1,10 @@
 package app
 
 import (
+	"log"
+	"os"
+	"os/signal"
+
 	"github.com/murat96k/kitaptar.kz/internal/auth/cache"
 	"github.com/murat96k/kitaptar.kz/internal/auth/config"
 	"github.com/murat96k/kitaptar.kz/internal/auth/handler"
@@ -10,9 +14,6 @@ import (
 	"github.com/murat96k/kitaptar.kz/pkg/httpserver"
 	"github.com/murat96k/kitaptar.kz/pkg/jwttoken"
 	userClient "github.com/uristemov/auth-user-grpc/client/grpc"
-	"log"
-	"os"
-	"os/signal"
 )
 
 func Run(cfg *config.Config) error {
@@ -28,7 +29,7 @@ func Run(cfg *config.Config) error {
 		log.Printf("connection to DB error %s", err)
 	}
 
-	token := jwttoken.New(cfg.Auth.JwtSecretKey)
+	token := jwttoken.New(cfg.Auth.Access.JwtSecretKey)
 
 	redisClient, err := pkg_redis.NewRedisClient(cfg)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 
 func NewRedisClient(cfg *config.Config) (*redis.Client, error) {
 
-	client := redis.NewClient(&redis.Options{Addr: cfg.Redis.Address, Password: "", DB: 0})
+	client := redis.NewClient(&redis.Options{Addr: cfg.Redis.Address, Password: "", DB: cfg.Redis.DB})
 
 	err := client.Ping(context.Background()).Err()
 	if err != nil {

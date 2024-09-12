@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/georgysavva/scany/pgxscan"
 	"github.com/murat96k/kitaptar.kz/api"
 	"github.com/murat96k/kitaptar.kz/internal/kitaptar/entity"
-	"strings"
-	"time"
 )
 
 func (p *Postgres) GetAllFilePaths(ctx context.Context) ([]entity.FilePath, error) {
@@ -67,6 +68,7 @@ func (p *Postgres) CreateFilePath(ctx context.Context, req *api.FilePathRequest)
 
 	err = p.Pool.QueryRow(ctx, query, req.Mobi, req.Fb2, req.Epub, req.Docx, time.Now()).Scan(&filePathId)
 	if err != nil {
+		//nolint
 		tx.Rollback(ctx)
 		return "", err
 	}
@@ -109,7 +111,6 @@ func (p *Postgres) UpdateFilePath(ctx context.Context, id string, req *api.FileP
 	if req.Docx != "" {
 		values = append(values, fmt.Sprintf("docx=$%d", paramCount))
 		params = append(params, req.Docx)
-		paramCount++
 	}
 
 	setQuery := strings.Join(values, ", ")

@@ -22,4 +22,11 @@ GrpcServer:
 
 Redis:
   address: 'localhost:6379'
+  db: 1
   TimeToLive: 24h
+
+SMTP:
+  host: "smtp.gmail.com"
+  port: 587
+  username: "meirovan777@gmail.com"
+  password: "xxrz aifc iqem bqbh"

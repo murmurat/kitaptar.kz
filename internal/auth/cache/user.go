@@ -2,47 +2,29 @@ package cache
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/murat96k/kitaptar.kz/internal/auth/entity"
+	"time"
 )
 
-type UserCacher interface {
-	GetUser(ctx context.Context, key string) (*entity.User, error)
-	SetUser(ctx context.Context, value *entity.User) error
-	DeleteUser(ctx context.Context, key string) error
+type TokenCacher interface {
+	GetToken(ctx context.Context, key string) (string, error)
+	SetToken(ctx context.Context, key, refreshId string, expirationTime time.Duration) error
+	DeleteToken(ctx context.Context, key string) error
 }
 
-func (c *Cache) GetUser(ctx context.Context, key string) (*entity.User, error) {
+func (c *Cache) GetToken(ctx context.Context, key string) (string, error) {
 
 	value, err := c.redisCli.Get(ctx, key).Result()
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	if value == "" {
-		return nil, nil
-	}
-
-	var user *entity.User
-
-	err = json.Unmarshal([]byte(value), &user)
-	if err != nil {
-		return nil, err
-	}
-
-	return user, nil
+	return value, nil
 }
 
-func (c *Cache) SetUser(ctx context.Context, value *entity.User) error {
-
-	jsonValue, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-
-	return c.redisCli.Set(ctx, value.Id.String(), string(jsonValue), c.Expiration).Err()
+func (c *Cache) SetToken(ctx context.Context, key, refreshId string, expirationTime time.Duration) error {
+	return c.redisCli.Set(ctx, key, refreshId, expirationTime).Err()
 }
 
-func (c *Cache) DeleteUser(ctx context.Context, key string) error {
+func (c *Cache) DeleteToken(ctx context.Context, key string) error {
 	return c.redisCli.Del(ctx, key).Err()
 }
